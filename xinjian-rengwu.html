@@ -1,0 +1,424 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>新建任务</title>
+  <style>
+    :root {
+      --bg: #f3efe7;
+      --panel: rgba(255, 252, 247, 0.94);
+      --panel-strong: #fffdfa;
+      --line: rgba(91, 67, 43, 0.12);
+      --line-soft: rgba(91, 67, 43, 0.08);
+      --text: #2f261d;
+      --muted: #72685d;
+      --primary: #8c4f28;
+      --primary-tint: rgba(140, 79, 40, 0.12);
+      --accent: #1b695f;
+      --accent-soft: rgba(27, 105, 95, 0.14);
+      --warning: #cb8a31;
+      --warning-soft: rgba(203, 138, 49, 0.16);
+      --shadow-sm: 0 22px 52px rgba(58, 41, 25, 0.12);
+      --radius-xl: 30px;
+      --radius-lg: 24px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Microsoft YaHei UI", "PingFang SC", "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 0% 0%, rgba(140, 79, 40, 0.14), transparent 24%),
+        radial-gradient(circle at 100% 0%, rgba(27, 105, 95, 0.14), transparent 22%),
+        linear-gradient(135deg, #f9f6f1 0%, #f0e5d7 55%, #e8d8c8 100%);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+      background-size: 38px 38px;
+      mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.42), transparent 84%);
+    }
+
+    .page {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 28px;
+      display: grid;
+      gap: 22px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-sm);
+      backdrop-filter: blur(10px);
+      overflow: hidden;
+    }
+
+    .panel-head,
+    .title-row,
+    .footer-actions,
+    .footer-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .panel-head,
+    .footer-actions {
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .panel-head { padding: 24px 24px 0; }
+
+    .panel-title {
+      display: grid;
+      gap: 8px;
+    }
+
+    .panel-title h1,
+    .panel-title h2 {
+      margin: 0;
+      line-height: 1.2;
+    }
+
+    .panel-title h1 { font-size: 28px; }
+    .panel-title h2 { font-size: 20px; }
+
+    .panel-title p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.75;
+      max-width: 980px;
+    }
+
+    .meta-chip,
+    .status-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 34px;
+      padding: 0 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .meta-chip {
+      background: var(--primary-tint);
+      border: 1px solid rgba(140, 79, 40, 0.16);
+      color: var(--primary);
+    }
+
+    .status-chip {
+      background: var(--warning-soft);
+      border: 1px solid rgba(203, 138, 49, 0.18);
+      color: var(--warning);
+    }
+
+    .form-wrap {
+      padding: 20px 24px 24px;
+      display: grid;
+      gap: 20px;
+    }
+
+    .sub-panel {
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: rgba(255, 252, 247, 0.9);
+      padding: 18px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .sub-panel-primary {
+      border-color: rgba(140, 79, 40, 0.16);
+      background:
+        linear-gradient(180deg, rgba(248, 241, 232, 0.98), rgba(255, 250, 244, 0.95)),
+        var(--panel);
+      box-shadow: inset 0 0 0 1px rgba(140, 79, 40, 0.05);
+    }
+
+    .sub-panel-secondary {
+      background: rgba(255, 255, 255, 0.78);
+      border-color: rgba(91, 67, 43, 0.1);
+    }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .section-mark {
+      width: 6px;
+      height: 22px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #a85d2d, #d08a45);
+      flex: 0 0 auto;
+    }
+
+    .sub-panel-secondary .section-mark {
+      background: linear-gradient(180deg, #8a715b 0%, #6b5a49 100%);
+    }
+
+    .section-head h2 {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.2;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .field {
+      display: grid;
+      gap: 8px;
+    }
+
+    .field-span-2 { grid-column: 1 / -1; }
+
+    .field label {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .input,
+    .select,
+    .textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.92);
+      color: var(--text);
+      font-size: 14px;
+      outline: none;
+    }
+
+    .input,
+    .select {
+      min-height: 48px;
+      padding: 0 14px;
+    }
+
+    .textarea {
+      min-height: 128px;
+      padding: 14px;
+      resize: vertical;
+      line-height: 1.7;
+    }
+
+    .helper-text {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .footer-actions {
+      display: grid;
+      gap: 14px;
+      padding-top: 6px;
+      border-top: 1px solid var(--line-soft);
+    }
+
+    .footer-buttons {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 44px;
+      padding: 0 18px;
+      border-radius: 14px;
+      font-size: 14px;
+      font-weight: 700;
+      border: 0;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #9d5a2c, #c87e3a);
+      color: #fffaf3;
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(91, 67, 43, 0.12);
+      color: var(--text);
+    }
+
+    @media (max-width: 1080px) {
+      .form-grid { grid-template-columns: 1fr; }
+      .field-span-2 { grid-column: auto; }
+    }
+
+    @media (max-width: 760px) {
+      .page { padding: 16px; }
+      .panel { border-radius: 22px; }
+      .panel-head, .form-wrap { padding-left: 18px; padding-right: 18px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <section class="panel">
+      <div class="panel-head">
+        <div class="panel-title">
+          <div class="title-row">
+            <h1>新建任务</h1>
+            <span class="status-chip">待提交</span>
+          </div>
+          <p>选择核查企业后，录入本次交任务的原因、任务类型、核查依据和共同核查人，用于生成新的核查任务。提交后进入后续核查办理流程。</p>
+        </div>
+      </div>
+
+      <div class="form-wrap">
+        <div class="sub-panel sub-panel-primary">
+          <div class="section-head">
+            <span class="section-mark"></span>
+            <h2>任务信息</h2>
+          </div>
+          <div class="form-grid">
+            <div class="field">
+              <label for="taskType">核查任务类型</label>
+              <select id="taskType" class="select">
+                <option>日常核查</option>
+                <option>专项核查</option>
+                <option>精准核查</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="companySelect">选择核查企业</label>
+              <input id="companySelect" class="input" type="text" value="北京城建示范工程有限公司" list="companyOptions" placeholder="请输入或选择核查企业">
+              <datalist id="companyOptions">
+                <option value="北京城建示范工程有限公司"></option>
+                <option value="北京中城建设工程有限公司"></option>
+                <option value="北京昌泰古建工程有限公司"></option>
+                <option value="北京启航建筑劳务有限公司"></option>
+                <option value="北京华盛机电安装有限公司"></option>
+              </datalist>
+            </div>
+            <div class="field">
+              <label for="legalPhone">法定代表人手机号</label>
+              <input id="legalPhone" class="input" type="text" value="13800138000" disabled>
+            </div>
+            <div class="field">
+              <label for="eregTask">关联 E 监管任务</label>
+              <input id="eregTask" class="input" type="text" value="JG-2026-00351" list="eregTaskOptions" placeholder="请输入或选择关联 E 监管任务">
+              <datalist id="eregTaskOptions">
+                <option value="JG-2026-00351">JG-2026-00351 / 北京城建示范工程有限公司</option>
+                <option value="JG-2026-00352">JG-2026-00352 / 北京中城建设工程有限公司</option>
+                <option value="JG-2026-00353">JG-2026-00353 / 北京昌泰古建工程有限公司</option>
+                <option value="JG-2026-00354">JG-2026-00354 / 北京启航建筑劳务有限公司</option>
+                <option value="JG-2026-00355">JG-2026-00355 / 北京华盛机电安装有限公司</option>
+              </datalist>
+            </div>
+            <div class="field field-span-2">
+              <label for="reason">核查原因</label>
+              <textarea id="reason" class="textarea" placeholder="请输入本次交任务的核查原因。">依据企业资质申报受理安排，需对企业申报资料完整性、关键人员情况和企业附件情况开展核查。</textarea>
+            </div>
+            <div class="field field-span-2">
+              <label for="basisUpload">上传核查依据</label>
+              <input id="basisUpload" class="input" type="text" value="支持上传 PDF 和 JPG 图片" readonly>
+              <span class="helper-text">此处可接入附件上传组件，用于补充核查依据材料。</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="sub-panel sub-panel-secondary">
+          <div class="section-head">
+            <span class="section-mark"></span>
+            <h2>核查人员安排</h2>
+          </div>
+          <div class="form-grid">
+            <div class="field">
+              <label>核查人</label>
+              <input class="input" type="text" value="系统默认带出当前登录人" disabled>
+            </div>
+            <div class="field">
+              <label>核查人电话</label>
+              <input class="input" type="text" value="系统自动带出" disabled>
+            </div>
+            <div class="field">
+              <label for="assistants">共同核查人</label>
+              <input id="assistants" class="input" type="text" value="李文静、周海宁" placeholder="请输入共同核查人，多个以顿号分隔">
+            </div>
+            <div class="field">
+              <label>共同核查人电话</label>
+              <input class="input" type="text" value="根据共同核查人自动带出" disabled>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer-actions">
+          <div class="footer-buttons">
+            <button class="btn btn-secondary" type="button" onclick="cancelTask()">取消</button>
+            <button class="btn btn-primary" type="button" onclick="submitTask()">提交任务</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+    const companySelect = document.getElementById("companySelect");
+    const legalPhone = document.getElementById("legalPhone");
+    const companyPhoneMap = {
+      "北京城建示范工程有限公司": "13800138000",
+      "北京中城建设工程有限公司": "13800138001",
+      "北京昌泰古建工程有限公司": "13800138002",
+      "北京启航建筑劳务有限公司": "13800138003",
+      "北京华盛机电安装有限公司": "13800138004"
+    };
+
+    function syncLegalPhone() {
+      legalPhone.value = companyPhoneMap[companySelect.value] || "自动带出";
+    }
+
+    function cancelTask() {
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type: "close-new-task-modal" }, "*");
+        return;
+      }
+      window.history.back();
+    }
+
+    function submitTask() {
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type: "close-new-task-modal", submitted: true }, "*");
+        return;
+      }
+      window.location.href = "./index.html";
+    }
+
+    companySelect.addEventListener("input", syncLegalPhone);
+    companySelect.addEventListener("change", syncLegalPhone);
+    syncLegalPhone();
+  </script>
+</body>
+</html>

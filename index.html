@@ -1,0 +1,855 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>交任务核查列表</title>
+  <style>
+    :root {
+      --bg: #f3efe7;
+      --panel: rgba(255, 252, 247, 0.94);
+      --line: rgba(91, 67, 43, 0.12);
+      --line-soft: rgba(91, 67, 43, 0.08);
+      --text: #2f261d;
+      --muted: #72685d;
+      --primary: #8c4f28;
+      --primary-tint: rgba(140, 79, 40, 0.12);
+      --accent: #1b695f;
+      --warning: #cb8a31;
+      --warning-soft: rgba(203, 138, 49, 0.16);
+      --success: #1b695f;
+      --success-soft: rgba(27, 105, 95, 0.14);
+      --shadow-sm: 0 22px 52px rgba(58, 41, 25, 0.12);
+      --radius-xl: 30px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Microsoft YaHei UI", "PingFang SC", "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 0% 0%, rgba(140, 79, 40, 0.14), transparent 24%),
+        radial-gradient(circle at 100% 0%, rgba(27, 105, 95, 0.14), transparent 22%),
+        linear-gradient(135deg, #f9f6f1 0%, #f0e5d7 55%, #e8d8c8 100%);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+      background-size: 38px 38px;
+      mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.42), transparent 84%);
+    }
+
+    .page {
+      max-width: 1480px;
+      margin: 0 auto;
+      padding: 28px;
+      display: grid;
+      gap: 22px;
+    }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-xl);
+      box-shadow: var(--shadow-sm);
+      backdrop-filter: blur(10px);
+      overflow: hidden;
+    }
+
+    .toolbar,
+    .panel-head,
+    .list-actions,
+    .status-cell,
+    .assignee-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 14px;
+    }
+
+    .toolbar,
+    .panel-head {
+      align-items: flex-start;
+      justify-content: space-between;
+    }
+
+    .toolbar { padding: 22px 24px 0; }
+
+    .meta-chip,
+    .status-pill,
+    .assignee-chip,
+    .task-type {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .meta-chip {
+      background: var(--primary-tint);
+      border: 1px solid rgba(140, 79, 40, 0.16);
+      color: var(--primary);
+    }
+
+    .filter-grid {
+      padding: 20px 24px 24px;
+      display: grid;
+      grid-template-columns: 1.4fr repeat(4, minmax(180px, 1fr)) auto;
+      gap: 14px;
+    }
+
+    .stats-strip {
+      padding: 0 24px 18px;
+      background: rgba(248, 241, 232, 0.78);
+    }
+
+    .list-metrics {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .list-metric-card {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: var(--primary-tint);
+      border: 1px solid rgba(140, 79, 40, 0.16);
+    }
+
+    .list-metric-card span,
+    .list-metric-card strong {
+      color: var(--primary);
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    .field { display: grid; gap: 8px; }
+
+    .field-actions {
+      align-self: end;
+      display: flex;
+      align-items: flex-end;
+    }
+
+    .field label {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .input,
+    .select {
+      width: 100%;
+      min-height: 46px;
+      padding: 0 14px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.92);
+      color: var(--text);
+      outline: none;
+    }
+
+    .panel-head { padding: 24px 24px 0; }
+
+    .panel-title h2 {
+      margin: 0;
+      font-size: 22px;
+      line-height: 1.2;
+    }
+
+    .panel-title p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.75;
+    }
+
+    .panel-title-inline {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .list-actions {
+      justify-content: flex-end;
+      align-items: center;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 44px;
+      padding: 0 18px;
+      border-radius: 14px;
+      font-size: 14px;
+      font-weight: 600;
+      border: 0;
+      cursor: pointer;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #9d5a2c, #c87e3a);
+      color: #fffaf3;
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid rgba(91, 67, 43, 0.12);
+      color: var(--text);
+    }
+
+    .btn-link {
+      min-height: auto;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      color: var(--primary);
+    }
+
+    .table-wrap {
+      padding: 20px 24px 24px;
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      min-width: 1120px;
+      border-collapse: collapse;
+    }
+
+    th, td {
+      padding: 16px 14px;
+      border-bottom: 1px solid var(--line-soft);
+      text-align: left;
+      vertical-align: top;
+      font-size: 14px;
+    }
+
+    th {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      background: rgba(248, 241, 232, 0.88);
+    }
+
+    tbody tr:hover { background: rgba(248, 241, 232, 0.6); }
+
+    .company { display: grid; gap: 6px; }
+    .company strong { font-size: 15px; line-height: 1.5; }
+    .archive-no, .start-time { color: var(--muted); line-height: 1.65; }
+    .archive-no { font-family: "Consolas", "SFMono-Regular", monospace; font-size: 13px; }
+
+    .task-type {
+      background: rgba(255, 255, 255, 0.88);
+      border: 1px solid var(--line);
+      color: var(--text);
+    }
+
+    .status-cell {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+      min-width: 150px;
+    }
+
+    .status-pending { background: var(--warning-soft); color: var(--warning); }
+    .status-reviewing { background: rgba(140, 79, 40, 0.16); color: var(--primary); }
+    .status-done { background: var(--success-soft); color: var(--success); }
+
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      border-radius: 999px;
+      background: rgba(91, 67, 43, 0.12);
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #a85d2d 0%, #d08a45 100%);
+    }
+
+    .status-note {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .assignee-list { align-items: center; gap: 8px; }
+
+    .assignee-chip {
+      background: rgba(255, 255, 255, 0.84);
+      border: 1px solid var(--line);
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .assignee-chip.primary {
+      background: var(--primary-tint);
+      border-color: rgba(140, 79, 40, 0.16);
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    .empty-state {
+      padding: 56px 24px 60px;
+      text-align: center;
+      color: var(--muted);
+    }
+
+    .empty-state strong {
+      display: block;
+      margin-bottom: 8px;
+      color: var(--text);
+      font-size: 18px;
+    }
+
+    .footer-note {
+      padding: 0 24px 24px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.75;
+    }
+
+    .new-task-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 80;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+      background: rgba(47, 38, 29, 0.34);
+      backdrop-filter: blur(4px);
+    }
+
+    .new-task-overlay[hidden] { display: none; }
+
+    .new-task-dialog {
+      width: min(1440px, calc(100vw - 40px));
+      height: min(900px, calc(100vh - 40px));
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      border-radius: 26px;
+      border: 1px solid var(--line);
+      background: rgba(255, 252, 247, 0.98);
+      box-shadow: 0 28px 72px rgba(58, 41, 25, 0.22);
+      overflow: hidden;
+    }
+
+    .check-task-dialog {
+      width: min(1480px, calc(100vw - 64px));
+      height: min(900px, calc(100vh - 56px));
+      border-radius: 30px;
+      box-shadow: 0 32px 84px rgba(58, 41, 25, 0.28);
+    }
+
+    .new-task-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--line-soft);
+      background: rgba(248, 241, 232, 0.92);
+    }
+
+    .new-task-head h3 {
+      margin: 0;
+      font-size: 16px;
+      line-height: 1.2;
+    }
+
+    .new-task-head p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .new-task-head .btn {
+      min-height: 36px;
+      padding: 0 12px;
+      border-radius: 12px;
+      font-size: 13px;
+    }
+
+    .new-task-frame {
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: #fffdfa;
+    }
+
+    @media (max-width: 1180px) {
+      .toolbar, .panel-head {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .filter-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .list-actions { justify-content: flex-start; }
+    }
+
+    @media (max-width: 760px) {
+      .page { padding: 16px; }
+      .panel { border-radius: 22px; }
+      .filter-grid { grid-template-columns: 1fr; }
+
+      .toolbar,
+      .panel-head,
+      .filter-grid,
+      .stats-strip,
+      .table-wrap,
+      .footer-note {
+        padding-left: 18px;
+        padding-right: 18px;
+      }
+
+      table, thead, tbody, th, td, tr {
+        display: block;
+        min-width: 0;
+      }
+
+      thead { display: none; }
+      tbody { display: grid; gap: 14px; }
+
+      tbody tr {
+        padding: 16px;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: rgba(255, 252, 247, 0.96);
+      }
+
+      tbody td {
+        padding: 8px 0;
+        border-bottom: 0;
+      }
+
+      tbody td::before {
+        content: attr(data-label);
+        display: block;
+        margin-bottom: 6px;
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .new-task-overlay { padding: 10px; }
+      .new-task-dialog {
+        width: calc(100vw - 20px);
+        height: calc(100vh - 20px);
+        border-radius: 18px;
+      }
+      .check-task-dialog {
+        width: calc(100vw - 20px);
+        height: calc(100vh - 20px);
+        border-radius: 18px;
+      }
+      .new-task-head { padding: 10px 12px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <main class="main">
+      <section class="panel">
+        <div class="toolbar">
+          <div class="toolbar-title">
+            <div class="meta-chip">支持按企业、案卷编号、任务类型和核查人筛选</div>
+          </div>
+        </div>
+
+        <div class="filter-grid">
+          <div class="field">
+            <label for="keyword">关键字</label>
+            <input id="keyword" class="input" type="text" placeholder="请输入企业名称或案卷编号">
+          </div>
+          <div class="field">
+            <label for="statusFilter">任务状态</label>
+            <select id="statusFilter" class="select">
+              <option value="">全部状态</option>
+              <option value="待启动核查">待启动核查</option>
+              <option value="待上传核查资料">待上传核查资料</option>
+              <option value="待上传复查资料">待上传复查资料</option>
+              <option value="待上传整改资料">待上传整改资料</option>
+              <option value="初审">初审</option>
+              <option value="复审">复审</option>
+              <option value="待开整改">待开整改</option>
+              <option value="复查初审">复查初审</option>
+              <option value="复查复审">复查复审</option>
+              <option value="已完成">已完成</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="typeFilter">任务类型</label>
+            <select id="typeFilter" class="select">
+              <option value="">全部类型</option>
+              <option value="日常核查">日常核查</option>
+              <option value="专项核查">专项核查</option>
+              <option value="精准核查">精准核查</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="certificateFilter">核查证书</label>
+            <select id="certificateFilter" class="select">
+              <option value="">全部证书</option>
+              <option value="建筑业证书">建筑业证书</option>
+              <option value="安全证证书">安全证证书</option>
+              <option value="监理证书">监理证书</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="reviewerFilter">核查人</label>
+            <select id="reviewerFilter" class="select">
+              <option value="">全部核查人</option>
+            </select>
+          </div>
+          <div class="field-actions">
+            <button id="searchButton" class="btn btn-primary" type="button">查询</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <div class="panel-head">
+          <div class="panel-title">
+            <div class="panel-title-inline">
+              <h2>任务列表</h2>
+            </div>
+          </div>
+          <div class="list-actions">
+            <button class="btn btn-secondary" type="button">导出列表</button>
+            <button class="btn btn-primary" type="button" onclick="openNewTaskWindow()">新建任务</button>
+          </div>
+        </div>
+
+        <div class="stats-strip">
+          <div class="list-metrics">
+            <div class="list-metric-card"><span>全部任务</span><strong id="metric-total">0</strong></div>
+            <div class="list-metric-card"><span>待启动核查</span><strong id="metric-startup">0</strong></div>
+            <div class="list-metric-card"><span>待上传核查资料</span><strong id="metric-upload-check">0</strong></div>
+            <div class="list-metric-card"><span>待上传复查资料</span><strong id="metric-upload-review">0</strong></div>
+            <div class="list-metric-card"><span>待上传整改资料</span><strong id="metric-upload-rectify">0</strong></div>
+            <div class="list-metric-card"><span>初审</span><strong id="metric-first-review">0</strong></div>
+            <div class="list-metric-card"><span>复审</span><strong id="metric-second-review">0</strong></div>
+            <div class="list-metric-card"><span>待开整改</span><strong id="metric-rectify-open">0</strong></div>
+            <div class="list-metric-card"><span>复查初审</span><strong id="metric-recheck-first">0</strong></div>
+            <div class="list-metric-card"><span>复查复审</span><strong id="metric-recheck-second">0</strong></div>
+            <div class="list-metric-card"><span>已完成</span><strong id="metric-done">0</strong></div>
+          </div>
+        </div>
+
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>任务进度</th>
+                <th>任务启动日期</th>
+                <th>企业名称</th>
+                <th>案卷编号</th>
+                <th>核查证书</th>
+                <th>任务类型</th>
+                <th>核查人</th>
+                <th>共同核查人</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="taskTableBody"></tbody>
+          </table>
+          <div id="emptyState" class="empty-state" hidden>
+            <strong>没有匹配任务</strong>
+            当前筛选条件下未找到数据，可以调整关键字或筛选项。
+          </div>
+        </div>
+
+      </section>
+    </main>
+  </div>
+
+  <div class="new-task-overlay" id="newTaskOverlay" hidden>
+    <section class="new-task-dialog check-task-dialog">
+      <div class="new-task-head">
+        <div>
+          <h3>新建任务</h3>
+          <p>当前以弹框方式打开新建任务页面，便于在列表页内直接预览和返回。</p>
+        </div>
+        <button class="btn btn-secondary" type="button" id="newTaskCloseButton">关闭</button>
+      </div>
+      <iframe class="new-task-frame" id="newTaskFrame" src="./xinjian-rengwu.html" title="新建任务"></iframe>
+    </section>
+  </div>
+
+  <div class="new-task-overlay" id="checkTaskOverlay" hidden>
+    <section class="new-task-dialog check-task-dialog">
+      <div class="new-task-head">
+        <div>
+          <h3 id="checkTaskTitle">核查页面</h3>
+          <p id="checkTaskDesc">当前以弹框方式打开核查页面，便于在列表页内直接查看和返回。</p>
+        </div>
+        <button class="btn btn-secondary" type="button" id="checkTaskCloseButton">关闭</button>
+      </div>
+      <iframe class="new-task-frame" id="checkTaskFrame" src="./jzy-hecha.html" title="核查页面"></iframe>
+    </section>
+  </div>
+
+  <script>
+    const tasks = [
+      { status: "待启动核查", progress: 5, startDate: "", certificates: "建筑业证书", company: "北京中城建设工程有限公司", archiveNo: "京建核（门建）字[2026]第079号", taskType: "日常核查", reviewer: "张晓峰", partners: ["李文静", "周海宁"] },
+      { status: "待启动核查", progress: 6, startDate: "", certificates: "安全证证书", company: "北京启航建筑劳务有限公司", archiveNo: "京建核（兴建）字[2026]第011号", taskType: "日常核查", reviewer: "张晓峰", partners: ["高宁"] },
+      { status: "待启动核查", progress: 8, startDate: "", certificates: "监理证书", company: "北京京华古建装饰有限公司", archiveNo: "京建核（兴建）字[2026]第073号", taskType: "日常核查", reviewer: "赵晨", partners: ["李文静"] },
+      { status: "待上传核查资料", progress: 14, startDate: "2026-05-13", certificates: "建筑业证书", company: "北京宏达建筑劳务集团有限公司", archiveNo: "京建核（兴建）字[2026]第081号", taskType: "精准核查", reviewer: "陈宇", partners: ["周海宁"] },
+      { status: "待上传复查资料", progress: 18, startDate: "2026-05-13", certificates: "安全证证书", company: "北京建工市政安装有限公司", archiveNo: "京建核（兴建）字[2026]第061号", taskType: "日常核查", reviewer: "张晓峰", partners: ["高宁", "王卓"] },
+      { status: "初审", progress: 52, startDate: "2026-05-13", certificates: "建筑业证书", company: "北京昌泰古建工程有限公司", archiveNo: "京建核（兴建）字[2026]第012号", taskType: "专项核查", reviewer: "刘敏", partners: ["周海宁", "徐佳"] },
+      { status: "初审", progress: 49, startDate: "2026-05-12", certificates: "安全证证书", company: "北京安盛建筑工程有限公司", archiveNo: "京建核（兴建）字[2026]第118号", taskType: "专项核查", reviewer: "赵晨", partners: ["高宁", "徐佳"] },
+      { status: "复审", progress: 61, startDate: "2026-05-12", certificates: "建筑业证书", company: "北京盛达工程建设有限公司", archiveNo: "京建核（兴建）字[2026]第124号", taskType: "专项核查", reviewer: "赵晨", partners: ["高宁", "徐佳"] },
+      { status: "待开整改", progress: 68, startDate: "2026-05-12", certificates: "安全证证书", company: "北京城发市政工程有限公司", archiveNo: "京建核（兴建）字[2026]第044号", taskType: "专项核查", reviewer: "刘敏", partners: ["周海宁", "徐佳"] },
+      { status: "复查初审", progress: 22, startDate: "2026-05-14", certificates: "监理证书", company: "北京华建机电安装有限公司", archiveNo: "京建核（兴建）字[2026]第108号", taskType: "日常核查", reviewer: "张晓峰", partners: ["高宁", "王卓"] },
+      { status: "复查复审", progress: 76, startDate: "2026-05-11", certificates: "建筑业证书", company: "北京远成建筑劳务有限公司", archiveNo: "京建核（兴建）字[2026]第112号", taskType: "专项核查", reviewer: "刘敏", partners: ["徐佳"] },
+      { status: "已完成", progress: 100, startDate: "2026-05-10", certificates: "安全证证书", company: "北京华盛机电安装有限公司", archiveNo: "京建核（兴建）字[2026]第026号", taskType: "精准核查", reviewer: "陈宇", partners: ["王卓"] }
+    ];
+
+    const keywordInput = document.getElementById("keyword");
+    const statusFilter = document.getElementById("statusFilter");
+    const typeFilter = document.getElementById("typeFilter");
+    const certificateFilter = document.getElementById("certificateFilter");
+    const reviewerFilter = document.getElementById("reviewerFilter");
+    const searchButton = document.getElementById("searchButton");
+    const taskTableBody = document.getElementById("taskTableBody");
+    const emptyState = document.getElementById("emptyState");
+    const newTaskOverlay = document.getElementById("newTaskOverlay");
+    const newTaskCloseButton = document.getElementById("newTaskCloseButton");
+    const newTaskFrame = document.getElementById("newTaskFrame");
+    const checkTaskOverlay = document.getElementById("checkTaskOverlay");
+    const checkTaskCloseButton = document.getElementById("checkTaskCloseButton");
+    const checkTaskFrame = document.getElementById("checkTaskFrame");
+    const checkTaskTitle = document.getElementById("checkTaskTitle");
+    const checkTaskDesc = document.getElementById("checkTaskDesc");
+
+    function openNewTaskWindow() {
+      newTaskFrame.src = "./xinjian-rengwu.html";
+      newTaskOverlay.hidden = false;
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeNewTaskWindow() {
+      newTaskOverlay.hidden = true;
+      document.body.style.overflow = "";
+    }
+
+    function openCheckTaskWindow(task) {
+      const params = new URLSearchParams({
+        company: task.company,
+        archiveNo: task.archiveNo,
+        status: task.status,
+        certificates: task.certificates,
+        taskType: task.taskType,
+        startDate: task.startDate || "未记录"
+      });
+      checkTaskTitle.textContent = `${task.certificates}核查`;
+      checkTaskDesc.textContent = `当前以弹框方式打开${task.certificates}核查页面，当前任务进度为“${task.status}”。`;
+      checkTaskFrame.src = `${getCheckPagePath(task)}?${params.toString()}`;
+      checkTaskOverlay.hidden = false;
+      document.body.style.overflow = "hidden";
+    }
+
+    function closeCheckTaskWindow() {
+      checkTaskOverlay.hidden = true;
+      document.body.style.overflow = "";
+    }
+
+    function getCheckPagePath(task) {
+      if (task.certificates === "安全证证书") {
+        return "./aqz-hecha.html";
+      }
+      if (task.certificates === "监理证书") {
+        return "./jl-hecha.html";
+      }
+      return "./jzy-hecha.html";
+    }
+
+    function openCheckWindowWithTask(task) {
+      openCheckTaskWindow(task);
+    }
+
+    function getStatusClass(status) {
+      if (["待启动核查", "待上传核查资料", "待上传复查资料", "待上传整改资料"].includes(status)) return "status-pending";
+      if (["初审", "复审", "复查初审", "复查复审", "待开整改"].includes(status)) return "status-reviewing";
+      return "status-done";
+    }
+
+    function renderMetrics() {
+      document.getElementById("metric-total").textContent = tasks.length;
+      document.getElementById("metric-startup").textContent = tasks.filter((task) => task.status === "待启动核查").length;
+      document.getElementById("metric-upload-check").textContent = tasks.filter((task) => task.status === "待上传核查资料").length;
+      document.getElementById("metric-upload-review").textContent = tasks.filter((task) => task.status === "待上传复查资料").length;
+      document.getElementById("metric-upload-rectify").textContent = tasks.filter((task) => task.status === "待上传整改资料").length;
+      document.getElementById("metric-first-review").textContent = tasks.filter((task) => task.status === "初审").length;
+      document.getElementById("metric-second-review").textContent = tasks.filter((task) => task.status === "复审").length;
+      document.getElementById("metric-rectify-open").textContent = tasks.filter((task) => task.status === "待开整改").length;
+      document.getElementById("metric-recheck-first").textContent = tasks.filter((task) => task.status === "复查初审").length;
+      document.getElementById("metric-recheck-second").textContent = tasks.filter((task) => task.status === "复查复审").length;
+      document.getElementById("metric-done").textContent = tasks.filter((task) => task.status === "已完成").length;
+    }
+
+    function fillReviewerOptions() {
+      const reviewers = [...new Set(tasks.map((task) => task.reviewer))];
+      reviewers.forEach((reviewer) => {
+        const option = document.createElement("option");
+        option.value = reviewer;
+        option.textContent = reviewer;
+        reviewerFilter.appendChild(option);
+      });
+    }
+
+    function createAssigneeChips(names, primary) {
+      const wrapper = document.createElement("div");
+      wrapper.className = "assignee-list";
+      names.forEach((name) => {
+        const chip = document.createElement("span");
+        chip.className = primary ? "assignee-chip primary" : "assignee-chip";
+        chip.textContent = name;
+        wrapper.appendChild(chip);
+      });
+      return wrapper;
+    }
+
+    function deleteTask(archiveNo) {
+      const taskIndex = tasks.findIndex((task) => task.archiveNo === archiveNo && task.status === "待启动核查");
+      if (taskIndex === -1) return;
+      tasks.splice(taskIndex, 1);
+      renderMetrics();
+      renderTable();
+    }
+
+    function renderTable() {
+      const keyword = keywordInput.value.trim().toLowerCase();
+      const status = statusFilter.value;
+      const taskType = typeFilter.value;
+      const certificate = certificateFilter.value;
+      const reviewer = reviewerFilter.value;
+
+      const filtered = tasks.filter((task) => {
+        const matchesKeyword = !keyword || task.company.toLowerCase().includes(keyword) || task.archiveNo.toLowerCase().includes(keyword);
+        const matchesStatus = !status || task.status === status;
+        const matchesType = !taskType || task.taskType === taskType;
+        const matchesCertificate = !certificate || task.certificates === certificate;
+        const matchesReviewer = !reviewer || task.reviewer === reviewer;
+        return matchesKeyword && matchesStatus && matchesType && matchesCertificate && matchesReviewer;
+      });
+
+      taskTableBody.innerHTML = "";
+      emptyState.hidden = filtered.length !== 0;
+
+      filtered.forEach((task) => {
+        const row = document.createElement("tr");
+        const reviewStatuses = ["初审", "复审", "复查初审", "复查复审", "待开整改"];
+        const statusInteractiveClass = reviewStatuses.includes(task.status) ? "status-link" : "";
+        row.innerHTML = `
+          <td data-label="任务进度">
+            <div class="status-cell">
+              <span class="status-pill ${getStatusClass(task.status)} ${statusInteractiveClass}">${task.status}</span>
+              <div class="progress-track"><div class="progress-fill" style="width: ${task.progress}%"></div></div>
+            </div>
+          </td>
+          <td data-label="任务启动日期"><span class="start-time">${task.startDate || "--"}</span></td>
+          <td data-label="企业名称"><div class="company"><strong>${task.company}</strong></div></td>
+          <td data-label="案卷编号"><span class="archive-no">${task.archiveNo}</span></td>
+          <td data-label="核查证书">${task.certificates}</td>
+          <td data-label="任务类型"><span class="task-type">${task.taskType}</span></td>
+          <td data-label="核查人"></td>
+          <td data-label="共同核查人"></td>
+          <td data-label="操作"></td>
+        `;
+
+        row.children[6].appendChild(createAssigneeChips([task.reviewer], true));
+        row.children[7].appendChild(createAssigneeChips(task.partners, false));
+
+        row.querySelector(".status-pill").addEventListener("click", () => {
+          if (task.status === "待启动核查") {
+            openNewTaskWindow();
+          } else {
+            openCheckWindowWithTask(task);
+          }
+        });
+
+        const actionWrap = document.createElement("div");
+        if (task.status === "待启动核查") {
+          const deleteButton = document.createElement("button");
+          deleteButton.className = "btn-link";
+          deleteButton.type = "button";
+          deleteButton.textContent = "删除";
+          deleteButton.addEventListener("click", () => deleteTask(task.archiveNo));
+          actionWrap.appendChild(deleteButton);
+        } else {
+          const mainActionButton = document.createElement("button");
+          mainActionButton.className = "btn-link";
+          mainActionButton.type = "button";
+          mainActionButton.textContent = task.status === "已完成" ? "查看" : "核查";
+          mainActionButton.addEventListener("click", () => openCheckWindowWithTask(task));
+          actionWrap.appendChild(mainActionButton);
+        }
+
+        row.children[8].appendChild(actionWrap);
+        taskTableBody.appendChild(row);
+      });
+    }
+
+    [keywordInput, statusFilter, typeFilter, certificateFilter, reviewerFilter].forEach((element) => {
+      element.addEventListener("input", renderTable);
+      element.addEventListener("change", renderTable);
+    });
+    searchButton.addEventListener("click", renderTable);
+
+    newTaskCloseButton.addEventListener("click", closeNewTaskWindow);
+    newTaskOverlay.addEventListener("click", (event) => {
+      if (event.target === newTaskOverlay) closeNewTaskWindow();
+    });
+    checkTaskCloseButton.addEventListener("click", closeCheckTaskWindow);
+    checkTaskOverlay.addEventListener("click", (event) => {
+      if (event.target === checkTaskOverlay) closeCheckTaskWindow();
+    });
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape" && !newTaskOverlay.hidden) closeNewTaskWindow();
+      if (event.key === "Escape" && !checkTaskOverlay.hidden) closeCheckTaskWindow();
+    });
+    window.addEventListener("message", (event) => {
+      if (event.data && event.data.type === "close-new-task-modal") {
+        closeNewTaskWindow();
+      }
+      if (event.data && event.data.type === "close-check-task-modal") {
+        closeCheckTaskWindow();
+      }
+    });
+
+    renderMetrics();
+    fillReviewerOptions();
+    renderTable();
+  </script>
+</body>
+</html>
+

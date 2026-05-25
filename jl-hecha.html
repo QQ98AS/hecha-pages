@@ -1,0 +1,3596 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>监理证书核查展示页</title>
+  <style>
+    :root {
+      --bg: #f3efe7;
+      --panel: rgba(255, 252, 247, 0.92);
+      --panel-strong: #fffdfa;
+      --line: rgba(91, 67, 43, 0.12);
+      --line-strong: rgba(91, 67, 43, 0.18);
+      --text: #2f261d;
+      --muted: #72685d;
+      --primary: #8c4f28;
+      --primary-soft: rgba(140, 79, 40, 0.12);
+      --accent: #1b695f;
+      --accent-soft: rgba(27, 105, 95, 0.14);
+      --warn: #cb8a31;
+      --warn-soft: rgba(203, 138, 49, 0.16);
+      --danger: #b44d3e;
+      --danger-soft: rgba(180, 77, 62, 0.15);
+      --shadow: 0 22px 52px rgba(58, 41, 25, 0.12);
+      --radius-xl: 30px;
+      --radius-lg: 24px;
+      --radius-md: 18px;
+      --radius-sm: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      color: var(--text);
+      font-family: "Microsoft YaHei UI", "PingFang SC", "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(140, 79, 40, 0.14), transparent 24%),
+        radial-gradient(circle at 100% 0%, rgba(27, 105, 95, 0.14), transparent 22%),
+        linear-gradient(135deg, #f9f6f1 0%, #f0e5d7 55%, #e8d8c8 100%);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.08) 1px, transparent 1px);
+      background-size: 38px 38px;
+      mask-image: linear-gradient(to bottom, rgba(0, 0, 0, 0.45), transparent 84%);
+    }
+
+    button,
+    input,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .app-shell {
+      position: relative;
+      height: 100vh;
+      padding: 22px;
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      gap: 18px;
+      overflow: hidden;
+    }
+
+    .top-sticky-shell {
+      position: relative;
+      z-index: 40;
+      display: grid;
+      gap: 18px;
+      align-self: start;
+      min-height: 0;
+    }
+
+    .hero,
+    .nav-panel,
+    .content-panel,
+    .detail-panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+    }
+
+    .hero {
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0;
+      position: relative;
+      border: 1px solid rgba(123, 63, 29, 0.12);
+      box-shadow: var(--shadow);
+      background:
+        radial-gradient(circle at top right, rgba(181, 118, 60, 0.22), transparent 30%),
+        radial-gradient(circle at left center, rgba(150, 71, 39, 0.14), transparent 34%),
+        linear-gradient(180deg, rgba(228, 214, 198, 0.99), rgba(242, 232, 222, 0.97)),
+        linear-gradient(135deg, #dfcbb6, #f3e6d8);
+      color: var(--text);
+      box-shadow:
+        inset 0 4px 0 #9e4e2b,
+        var(--shadow);
+    }
+
+    .hero-main,
+    .hero-side {
+      padding: 26px 28px;
+    }
+
+    .hero-main {
+      display: grid;
+      gap: 18px;
+      padding-right: 580px;
+    }
+
+    .hero-kicker {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      width: fit-content;
+      padding: 8px 14px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.12);
+      font-size: 0.76rem;
+      letter-spacing: 0.04em;
+    }
+
+    .hero-main h1 {
+      margin: 0;
+      font-size: clamp(1.9rem, 4vw, 3rem);
+      line-height: 1.15;
+      letter-spacing: 0.02em;
+      color: #3f2c1d;
+    }
+
+    .hero-name-code {
+      margin-left: 12px;
+      font-size: 0.42em;
+      font-weight: 600;
+      color: #8a715b;
+      white-space: nowrap;
+    }
+
+    .hero-main p {
+      margin: 0;
+      max-width: 860px;
+      color: rgba(255, 249, 243, 0.88);
+      line-height: 1.8;
+      font-size: 0.94rem;
+    }
+
+    .hero-top-right {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: flex-start;
+      gap: 10px;
+      max-width: calc(100% - 40px);
+    }
+
+    .hero-summary-row {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    .hero-case-card {
+      position: static;
+      width: 260px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(255, 251, 246, 0.96);
+      border: 1px solid rgba(123, 63, 29, 0.12);
+      border-left: 4px solid #9e4e2b;
+      backdrop-filter: blur(10px);
+      display: grid;
+      gap: 4px;
+      box-shadow: 0 12px 24px rgba(59, 41, 24, 0.1);
+    }
+
+    .hero-case-card span {
+      font-size: 0.68rem;
+      color: #8a715b;
+    }
+
+    .hero-case-card strong {
+      font-size: 0.84rem;
+      line-height: 1.35;
+      color: #3f2c1d;
+      word-break: break-all;
+    }
+
+    .hero-summary-item {
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(255, 251, 246, 0.92);
+      border: 1px solid rgba(123, 63, 29, 0.1);
+      border-top: 2px solid rgba(158, 78, 43, 0.82);
+      display: grid;
+      gap: 4px;
+    }
+
+    .hero-summary-item.combined {
+      margin-left: auto;
+      width: fit-content;
+      min-width: 0;
+      padding: 10px 12px;
+      background: rgba(255, 251, 246, 0.96);
+      border: 1px solid rgba(123, 63, 29, 0.12);
+      border-left: 4px solid #9e4e2b;
+      box-shadow: 0 12px 24px rgba(59, 41, 24, 0.1);
+      gap: 4px;
+    }
+
+    .hero-summary-item span {
+      font-size: 0.68rem;
+      color: #8a715b;
+    }
+
+    .hero-summary-item strong {
+      font-size: 0.88rem;
+      line-height: 1.28;
+      color: #3f2c1d;
+    }
+
+    .hero-summary-item.combined span {
+      font-size: 0.68rem;
+      color: #8a715b;
+    }
+
+    .hero-summary-item.combined strong {
+      font-size: 0.84rem;
+      line-height: 1.35;
+      color: #3f2c1d;
+      white-space: nowrap;
+    }
+
+    .qualification-board {
+      background:
+        linear-gradient(180deg, rgba(248, 241, 232, 0.98), rgba(255, 250, 244, 0.95)),
+        var(--panel);
+      border: 1px solid rgba(123, 63, 29, 0.1);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(10px);
+      padding: 12px 16px;
+      display: grid;
+      gap: 10px;
+      box-shadow:
+        inset 0 3px 0 rgba(158, 78, 43, 0.82),
+        var(--shadow);
+    }
+
+    .qualification-board-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .qualification-board-head h2 {
+      margin: 0;
+      font-size: 0.94rem;
+      color: #3f2c1d;
+    }
+
+    .qualification-board-head h2 span {
+      margin-left: 10px;
+      color: #8a715b;
+      font-size: 0.74rem;
+      line-height: 1.45;
+      font-weight: 400;
+    }
+
+    .qualification-grid {
+      display: flex;
+      flex-wrap: nowrap;
+      gap: 8px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding-bottom: 2px;
+      scrollbar-width: thin;
+    }
+
+    .qualification-item {
+      flex: 0 0 auto;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(123, 63, 29, 0.1);
+      background: rgba(255, 252, 248, 0.94);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .qualification-item span {
+      font-size: 0.64rem;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .qualification-item strong {
+      font-size: 0.78rem;
+      line-height: 1.25;
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    .qualification-item.current {
+      background: linear-gradient(135deg, rgba(158, 78, 43, 0.1), rgba(214, 168, 108, 0.18));
+      border-color: rgba(158, 78, 43, 0.24);
+      box-shadow: inset 0 0 0 1px rgba(158, 78, 43, 0.08);
+    }
+
+    .hero-side {
+      border-left: 1px solid rgba(255, 255, 255, 0.12);
+      display: grid;
+      gap: 14px;
+      align-content: center;
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .hero-side h2 {
+      margin: 0;
+      font-size: 1rem;
+      color: rgba(255, 249, 243, 0.96);
+    }
+
+    .hero-side p {
+      margin: 0;
+      color: rgba(255, 249, 243, 0.78);
+      line-height: 1.7;
+      font-size: 0.84rem;
+    }
+
+    .hero-stat-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .hero-stat {
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      display: grid;
+      gap: 6px;
+    }
+
+    .hero-stat span {
+      font-size: 0.72rem;
+      color: rgba(255, 249, 243, 0.72);
+    }
+
+    .hero-stat strong {
+      font-size: 1.35rem;
+      line-height: 1;
+      color: #fff;
+    }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr) 320px;
+      gap: 18px;
+      min-height: 0;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .nav-panel,
+    .content-panel,
+    .detail-panel {
+      border-radius: var(--radius-lg);
+      min-height: 0;
+      height: 100%;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .content-panel {
+      overflow-x: hidden;
+      overflow-y: auto;
+    }
+
+    .content-top {
+      position: sticky;
+      top: 0;
+      z-index: 6;
+      display: grid;
+      background: linear-gradient(180deg, rgba(255, 252, 247, 0.98), rgba(255, 252, 247, 0.98));
+    }
+
+    .panel-head {
+      padding: 20px 20px 14px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.48);
+    }
+
+    .panel-head.compact {
+      padding: 16px 20px 10px;
+    }
+
+    .panel-head.hidden {
+      display: none;
+    }
+
+    .panel-head h2,
+    .panel-head h3 {
+      margin: 0;
+      font-size: 1rem;
+      line-height: 1.3;
+    }
+
+    .panel-head p {
+      margin: 7px 0 0;
+      color: var(--muted);
+      line-height: 1.65;
+      font-size: 0.8rem;
+    }
+
+    .toolbar,
+    .detail-summary {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.42);
+    }
+
+    .nav-scroll,
+    .content-scroll,
+    .detail-scroll {
+      flex: 1 1 auto;
+      height: 0;
+      min-height: 0;
+      overflow: auto;
+    }
+
+    .nav-scroll {
+      padding: 16px 20px 20px;
+      display: grid;
+      gap: 12px;
+      align-content: start;
+    }
+
+    .module-group-card {
+      border-radius: 18px;
+      border: 1px solid rgba(91, 67, 43, 0.1);
+      background: rgba(255, 255, 255, 0.88);
+      padding: 12px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .module-group-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 10px;
+      padding: 2px 2px 0;
+    }
+
+    .module-group-head strong {
+      font-size: 0.94rem;
+      line-height: 1.35;
+    }
+
+    .module-group-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.76rem;
+      line-height: 1.6;
+    }
+
+    .module-group-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .module-nav-item {
+      position: relative;
+      width: 100%;
+      text-align: left;
+      border-radius: 16px;
+      border: 1px solid rgba(91, 67, 43, 0.08);
+      background: rgba(255, 255, 255, 0.92);
+      padding: 12px 13px;
+      display: grid;
+      gap: 8px;
+      transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+    }
+
+    .module-nav-item:hover {
+      transform: translateY(-1px);
+    }
+
+    .module-nav-item.active {
+      border-color: rgba(140, 79, 40, 0.34);
+      box-shadow:
+        inset 0 0 0 1px rgba(140, 79, 40, 0.12),
+        0 12px 24px rgba(140, 79, 40, 0.12);
+      background: linear-gradient(135deg, rgba(248, 235, 221, 0.98), rgba(255, 251, 246, 0.92));
+    }
+
+    .module-nav-item.active::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 10px;
+      bottom: 10px;
+      width: 4px;
+      border-radius: 0 999px 999px 0;
+      background: linear-gradient(180deg, #a85d2d, #d08a45);
+    }
+
+    .module-nav-item-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 10px;
+    }
+
+    .module-nav-item strong {
+      font-size: 0.86rem;
+      line-height: 1.35;
+    }
+
+    .module-nav-item-note {
+      color: var(--muted);
+      font-size: 0.74rem;
+      line-height: 1.55;
+    }
+
+    .module-card {
+      position: relative;
+      width: 100%;
+      text-align: left;
+      border-radius: 20px;
+      border: 1px solid rgba(91, 67, 43, 0.08);
+      background: rgba(255, 255, 255, 0.84);
+      padding: 16px 16px 15px;
+      display: grid;
+      gap: 10px;
+      transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+    }
+
+    .module-card:hover {
+      transform: translateY(-1px);
+    }
+
+    .module-card.active {
+      border-color: rgba(140, 79, 40, 0.34);
+      box-shadow:
+        inset 0 0 0 1px rgba(140, 79, 40, 0.12),
+        0 12px 24px rgba(140, 79, 40, 0.12);
+      background: linear-gradient(135deg, rgba(248, 235, 221, 0.98), rgba(255, 251, 246, 0.92));
+    }
+
+    .module-card.active::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 14px;
+      bottom: 14px;
+      width: 4px;
+      border-radius: 0 999px 999px 0;
+      background: linear-gradient(180deg, #a85d2d, #d08a45);
+    }
+
+    .module-card.active strong {
+      color: #7b3f1d;
+    }
+
+    .module-card.active p {
+      color: #6a5644;
+    }
+
+    .module-card-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: start;
+    }
+
+    .module-card strong {
+      font-size: 0.92rem;
+      line-height: 1.35;
+    }
+
+    .module-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.78rem;
+      line-height: 1.65;
+    }
+
+    .module-tags {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px 9px;
+      border-radius: 999px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    .badge.primary {
+      background: var(--primary-soft);
+      color: var(--primary);
+    }
+
+    .badge.ok {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .badge.warn {
+      background: var(--warn-soft);
+      color: var(--warn);
+    }
+
+    .badge.risk {
+      background: var(--danger-soft);
+      color: var(--danger);
+    }
+
+    .toolbar {
+      display: grid;
+      gap: 10px;
+    }
+
+    .toolbar-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .toolbar-search {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .toolbar-search.builder-search {
+      grid-template-columns: minmax(240px, 320px) minmax(0, 1fr) auto;
+    }
+
+    .filter-select {
+      position: relative;
+      min-width: 0;
+    }
+
+    .filter-select-toggle {
+      width: 100%;
+      min-height: 42px;
+      border: 1px solid rgba(91, 67, 43, 0.12);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.92);
+      color: var(--text);
+      padding: 8px 12px;
+      font-size: 0.82rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      text-align: left;
+    }
+
+    .filter-select-value {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+      flex-wrap: wrap;
+    }
+
+    .filter-select-placeholder {
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .filter-select-arrow {
+      color: var(--muted);
+      font-size: 0.72rem;
+      flex: 0 0 auto;
+    }
+
+    .filter-dropdown {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      width: 100%;
+      padding: 10px;
+      border-radius: 16px;
+      border: 1px solid rgba(91, 67, 43, 0.12);
+      background: #fffdf8;
+      box-shadow: 0 16px 32px rgba(82, 54, 25, 0.14);
+      display: grid;
+      gap: 10px;
+      z-index: 20;
+    }
+
+    .filter-dropdown[hidden] {
+      display: none;
+    }
+
+    .filter-option-list {
+      display: grid;
+      gap: 8px;
+      max-height: 220px;
+      overflow-y: auto;
+      padding-right: 2px;
+    }
+
+    .filter-option {
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid rgba(91, 67, 43, 0.1);
+      background: rgba(255, 255, 255, 0.96);
+      color: var(--text);
+      padding: 8px 10px;
+      font-size: 0.8rem;
+      text-align: left;
+    }
+
+    .filter-option.active {
+      border-color: rgba(140, 79, 40, 0.2);
+      background: rgba(140, 79, 40, 0.08);
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    .filter-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding-right: 6px;
+    }
+
+    .filter-chip-remove {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 16px;
+      height: 16px;
+      border-radius: 999px;
+      background: rgba(140, 79, 40, 0.16);
+      color: var(--primary);
+      font-size: 0.7rem;
+      line-height: 1;
+      cursor: pointer;
+      flex: 0 0 auto;
+    }
+
+    @media (max-width: 1200px) {
+      .toolbar-search.builder-search {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .chip-btn {
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(91, 67, 43, 0.1);
+      background: rgba(255, 255, 255, 0.84);
+      color: var(--muted);
+      font-size: 0.76rem;
+      transition: all 160ms ease;
+    }
+
+    .chip-btn.active {
+      background: linear-gradient(135deg, rgba(140, 79, 40, 0.12), rgba(27, 105, 95, 0.1));
+      color: var(--primary);
+      border-color: rgba(140, 79, 40, 0.18);
+      font-weight: 700;
+    }
+
+    .search-input {
+      width: 100%;
+      border: 1px solid rgba(91, 67, 43, 0.12);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.92);
+      color: var(--text);
+      padding: 10px 12px;
+      font-size: 0.82rem;
+    }
+
+    .search-button {
+      min-width: 84px;
+      padding: 10px 16px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #9d5a2c, #c87e3a);
+      color: #fffaf3;
+      font-size: 0.82rem;
+      font-weight: 700;
+      box-shadow: 0 10px 20px rgba(140, 79, 40, 0.16);
+    }
+
+    .content-scroll {
+      padding: 20px;
+      display: grid;
+      gap: 16px;
+      align-content: start;
+      flex: 0 0 auto;
+      height: auto;
+      min-height: auto;
+      overflow: visible;
+    }
+
+    .overview-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .overview-card {
+      padding: 16px;
+      border-radius: 20px;
+      border: 1px solid rgba(91, 67, 43, 0.08);
+      background: rgba(255, 255, 255, 0.82);
+      display: grid;
+      gap: 6px;
+    }
+
+    .overview-card span {
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+
+    .overview-card strong {
+      font-size: 1.18rem;
+      line-height: 1;
+    }
+
+    .overview-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.76rem;
+      line-height: 1.6;
+    }
+
+    .section-card {
+      border-radius: 22px;
+      border: 1px solid rgba(91, 67, 43, 0.08);
+      background: rgba(255, 255, 255, 0.82);
+      overflow: hidden;
+    }
+
+    .section-head {
+      padding: 18px 18px 14px;
+      border-bottom: 1px solid rgba(91, 67, 43, 0.08);
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: start;
+      flex-wrap: wrap;
+    }
+
+    .section-head h3 {
+      margin: 0;
+      font-size: 0.96rem;
+    }
+
+    .section-head p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      line-height: 1.65;
+      font-size: 0.78rem;
+    }
+
+    .section-body {
+      padding: 16px 18px 18px;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .info-item {
+      padding: 12px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.76);
+      border: 1px solid rgba(91, 67, 43, 0.08);
+      display: grid;
+      gap: 6px;
+    }
+
+    .info-item span {
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+
+    .info-item strong {
+      font-size: 0.82rem;
+      line-height: 1.55;
+      word-break: break-word;
+    }
+
+    .people-grid,
+    .equipment-grid,
+    .achievement-grid,
+    .attachment-grid {
+      display: grid;
+      gap: 12px;
+    }
+
+    .people-grid {
+      counter-reset: builder-index;
+      grid-template-columns: 1fr;
+    }
+
+    .people-grid > .entity-card {
+      grid-column: auto;
+    }
+
+    .equipment-grid,
+    .achievement-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .attachment-grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .entity-card {
+      padding: 16px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.78);
+      border: 1px solid rgba(91, 67, 43, 0.08);
+      display: grid;
+      gap: 10px;
+    }
+
+    .entity-card.selectable {
+      cursor: pointer;
+      transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+    }
+
+    .entity-card.selectable:hover {
+      transform: translateY(-1px);
+    }
+
+    .entity-card.selected {
+      border-color: rgba(140, 79, 40, 0.34);
+      box-shadow:
+        inset 0 0 0 1px rgba(140, 79, 40, 0.14),
+        0 12px 24px rgba(140, 79, 40, 0.12);
+      background: linear-gradient(135deg, rgba(248, 235, 221, 0.98), rgba(255, 251, 246, 0.92));
+    }
+
+    .entity-card.full-span {
+      grid-column: 1 / -1 !important;
+      counter-increment: builder-index;
+    }
+
+    .entity-index {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 24px;
+      height: 24px;
+      padding: 0 7px;
+      border-radius: 999px;
+      background: rgba(140, 79, 40, 0.12);
+      color: var(--primary);
+      font-size: 0.72rem;
+      font-weight: 700;
+      line-height: 1;
+      flex: 0 0 auto;
+    }
+
+    .entity-card h4 {
+      margin: 0;
+      font-size: 0.9rem;
+      line-height: 1.45;
+    }
+
+    .entity-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: start;
+      gap: 10px;
+    }
+
+    .entity-top.builder-top {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto auto auto;
+      align-items: center;
+      column-gap: 8px;
+    }
+
+    .entity-top h4 {
+      flex: 1;
+      min-width: 0;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .entity-social-badge {
+      justify-self: start;
+    }
+
+    .entity-result-badge {
+      justify-self: end;
+      padding-inline: 7px;
+    }
+
+    .entity-title-block {
+      display: grid;
+      gap: 4px;
+      min-width: 0;
+    }
+
+    .entity-inline-field {
+      display: inline-flex;
+      align-items: center;
+      min-height: auto;
+      padding: 0;
+      border-radius: 0;
+      background: none;
+      color: var(--muted);
+      font-size: 0.76rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .entity-inline-field.stack {
+      display: grid;
+      gap: 2px;
+      white-space: normal;
+    }
+
+    .entity-inline-field-label {
+      font-size: 0.68rem;
+      color: rgba(122, 97, 72, 0.72);
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      line-height: 1.2;
+    }
+
+    .entity-inline-field-value {
+      font-size: 0.78rem;
+      color: var(--primary);
+      font-weight: 700;
+      font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      line-height: 1.3;
+    }
+
+    .entity-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.76rem;
+      line-height: 1.65;
+    }
+
+    .entity-meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .entity-actions {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: nowrap;
+      justify-content: flex-start;
+    }
+
+    .entity-attachment-card {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      min-width: 0;
+      max-width: none;
+    }
+
+    .entity-attachment-thumb {
+      width: 34px;
+      height: 34px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, rgba(140, 79, 40, 0.18), rgba(232, 210, 184, 0.42));
+      border: 1px solid rgba(140, 79, 40, 0.12);
+      display: grid;
+      place-items: center;
+      color: var(--primary);
+      font-size: 0.56rem;
+      font-weight: 700;
+      line-height: 1.05;
+      text-align: center;
+      padding: 2px;
+      cursor: pointer;
+      flex: 0 0 auto;
+    }
+
+    .entity-attachment-body {
+      display: none;
+    }
+
+    .entity-attachment-tools {
+      display: flex;
+      gap: 6px;
+      flex-wrap: nowrap;
+    }
+
+    .entity-action-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 24px;
+      padding: 0 8px;
+      border-radius: 999px;
+      border: 1px solid rgba(91, 67, 43, 0.1);
+      background: rgba(255, 250, 243, 0.92);
+      color: var(--primary);
+      font-size: 0.7rem;
+      font-weight: 700;
+      line-height: 1;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .entity-main {
+      display: grid;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .entity-card.attachment-card {
+      padding-bottom: 16px;
+    }
+
+    .entity-card.attachment-card .entity-actions {
+      position: static;
+      margin-left: auto;
+      align-self: start;
+    }
+
+    .entity-card.attachment-card .entity-top {
+      align-items: center;
+    }
+
+    .entity-card.attachment-card .entity-attachment-card {
+      gap: 4px;
+    }
+
+    .entity-card.attachment-card .entity-attachment-tools {
+      display: none;
+    }
+
+    .preview-modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(56, 39, 24, 0.36);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      z-index: 40;
+    }
+
+    .preview-modal[hidden] {
+      display: none;
+    }
+
+    .preview-dialog {
+      width: min(880px, calc(100vw - 48px));
+      max-height: calc(100vh - 48px);
+      border-radius: 24px;
+      background: #fffdf8;
+      border: 1px solid rgba(91, 67, 43, 0.1);
+      box-shadow: 0 24px 60px rgba(82, 54, 25, 0.2);
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr);
+      overflow: hidden;
+    }
+
+    .preview-dialog-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 18px 20px 14px;
+      border-bottom: 1px solid rgba(91, 67, 43, 0.08);
+    }
+
+    .preview-dialog-head h4 {
+      margin: 0;
+      font-size: 1rem;
+    }
+
+    .preview-dialog-head p {
+      margin: 4px 0 0;
+      color: var(--muted);
+      font-size: 0.76rem;
+      line-height: 1.55;
+    }
+
+    .preview-dialog-close {
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+      border: 1px solid rgba(91, 67, 43, 0.1);
+      background: rgba(255, 250, 243, 0.92);
+      color: var(--primary);
+      font-size: 1rem;
+      line-height: 1;
+      cursor: pointer;
+      flex: 0 0 auto;
+    }
+
+    .preview-dialog-body {
+      padding: 20px;
+      display: grid;
+      gap: 16px;
+      overflow: auto;
+    }
+
+    .preview-sheet {
+      min-height: 420px;
+      border-radius: 18px;
+      border: 1px solid rgba(91, 67, 43, 0.08);
+      background:
+        linear-gradient(180deg, rgba(250, 245, 237, 0.96), rgba(255, 255, 255, 0.98)),
+        repeating-linear-gradient(180deg, transparent, transparent 28px, rgba(91, 67, 43, 0.04) 28px, rgba(91, 67, 43, 0.04) 29px);
+      padding: 24px 26px;
+      display: grid;
+      align-content: start;
+      gap: 14px;
+    }
+
+    .preview-sheet-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px dashed rgba(91, 67, 43, 0.14);
+    }
+
+    .preview-sheet-head strong {
+      font-size: 1rem;
+      color: var(--text);
+    }
+
+    .preview-sheet-meta {
+      display: grid;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 0.78rem;
+      line-height: 1.7;
+    }
+
+    .preview-dialog-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+    }
+
+    .timeline {
+      display: grid;
+      gap: 12px;
+    }
+
+    .timeline-item {
+      display: grid;
+      grid-template-columns: 120px minmax(0, 1fr);
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px dashed rgba(91, 67, 43, 0.14);
+    }
+
+    .timeline-item:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .timeline-item strong {
+      font-size: 0.78rem;
+      color: var(--primary);
+      line-height: 1.6;
+    }
+
+    .timeline-item p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.78rem;
+      line-height: 1.75;
+    }
+
+    .detail-summary {
+      display: grid;
+      gap: 10px;
+    }
+
+    .detail-stat-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .detail-stat {
+      padding: 12px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.84);
+      border: 1px solid rgba(91, 67, 43, 0.08);
+      display: grid;
+      gap: 5px;
+    }
+
+    .detail-stat span {
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+
+    .detail-stat strong {
+      font-size: 0.96rem;
+      line-height: 1.1;
+    }
+
+    .detail-scroll {
+      padding: 18px 20px 20px;
+      display: grid;
+      gap: 14px;
+      align-content: start;
+    }
+
+    .focus-card,
+    .status-card,
+    .attachment-card {
+      padding: 16px;
+      border-radius: 20px;
+      border: 1px solid rgba(91, 67, 43, 0.08);
+      background: rgba(255, 255, 255, 0.82);
+      display: grid;
+      gap: 10px;
+    }
+
+    .focus-card h4,
+    .status-card h4,
+    .attachment-card h4 {
+      margin: 0;
+      font-size: 0.9rem;
+    }
+
+    .focus-card p,
+    .status-card p,
+    .attachment-card p,
+    .attachment-card li {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.78rem;
+      line-height: 1.75;
+    }
+
+    .attachment-list {
+      margin: 0;
+      padding-left: 18px;
+      display: grid;
+      gap: 6px;
+    }
+
+    .status-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .status-item {
+      padding: 12px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.76);
+      border: 1px solid rgba(91, 67, 43, 0.08);
+      display: grid;
+      gap: 6px;
+    }
+
+    .status-item strong {
+      font-size: 0.8rem;
+      line-height: 1.5;
+    }
+
+    .status-item span {
+      color: var(--muted);
+      font-size: 0.74rem;
+      line-height: 1.65;
+    }
+
+    .status-item ul {
+      margin: 0;
+      padding-left: 18px;
+      display: grid;
+      gap: 4px;
+    }
+
+    .status-item li {
+      color: var(--muted);
+      font-size: 0.74rem;
+      line-height: 1.65;
+    }
+
+    .plain-alert-list {
+      margin: 0;
+      padding-left: 18px;
+      display: grid;
+      gap: 6px;
+    }
+
+    .plain-alert-list li {
+      color: var(--muted);
+      font-size: 0.76rem;
+      line-height: 1.7;
+    }
+
+    .compact-alert-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .compact-alert-item {
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.76);
+      border: 1px solid rgba(91, 67, 43, 0.08);
+      display: flex;
+      align-items: start;
+      gap: 8px;
+    }
+
+    .compact-alert-item strong {
+      flex: 1;
+      font-size: 0.76rem;
+      line-height: 1.55;
+    }
+
+    .conclusion-options {
+      display: flex;
+      gap: 10px;
+    }
+
+    .conclusion-option {
+      cursor: pointer;
+      flex: 1;
+    }
+
+    .conclusion-choice {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .conclusion-choice input[type="radio"] {
+      margin: 0;
+      accent-color: #9e4e2b;
+    }
+
+    .catalog-selection-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 12px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(255, 252, 247, 0.9);
+      border: 1px solid rgba(91, 67, 43, 0.08);
+    }
+
+    .catalog-selection-main {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .catalog-selection-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .catalog-check {
+      width: 16px;
+      height: 16px;
+      accent-color: #9e4e2b;
+      flex: 0 0 auto;
+    }
+
+    .catalog-mini-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 28px;
+      padding: 0 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(91, 67, 43, 0.1);
+      background: rgba(255, 250, 243, 0.92);
+      color: var(--primary);
+      font-size: 0.72rem;
+      font-weight: 700;
+      line-height: 1;
+      white-space: nowrap;
+      cursor: pointer;
+    }
+
+    .catalog-mini-btn.risk {
+      color: var(--danger);
+      border-color: rgba(170, 67, 52, 0.14);
+      background: rgba(255, 243, 240, 0.94);
+    }
+
+    .entity-head-actions {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: nowrap;
+      margin-left: auto;
+    }
+
+    .entity-conclusion-switch {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: nowrap;
+    }
+
+    .form-field {
+      display: grid;
+      gap: 8px;
+    }
+
+    .form-field label {
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .opinion-textarea {
+      width: 100%;
+      min-height: 96px;
+      resize: vertical;
+      border: 1px solid rgba(91, 67, 43, 0.12);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.92);
+      padding: 12px;
+      color: var(--text);
+      font-size: 0.78rem;
+      line-height: 1.7;
+      font-family: inherit;
+    }
+
+    .upload-zone {
+      border: 1px dashed rgba(123, 63, 29, 0.24);
+      border-radius: 16px;
+      background: rgba(255, 250, 244, 0.82);
+      padding: 14px;
+      display: grid;
+      gap: 8px;
+    }
+
+    .upload-zone strong {
+      font-size: 0.8rem;
+      line-height: 1.45;
+      color: var(--text);
+    }
+
+    .upload-zone p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.74rem;
+      line-height: 1.65;
+    }
+
+    .upload-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    @media (max-width: 1380px) {
+      .workspace {
+        grid-template-columns: 250px minmax(0, 1fr);
+      }
+
+      .detail-panel {
+        grid-column: 1 / -1;
+      }
+    }
+
+    @media (max-width: 1120px) {
+      .hero {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-main {
+        padding-right: 28px;
+      }
+
+      .hero-top-right {
+        position: static;
+        max-width: none;
+        margin: 0 28px 0;
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .hero-case-card {
+        width: auto;
+      }
+
+      .hero-summary-row,
+      .qualification-grid,
+      .overview-grid,
+      .info-grid,
+      .people-grid,
+      .attachment-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .equipment-grid,
+      .achievement-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 880px) {
+      .app-shell {
+        padding: 14px;
+      }
+
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+
+    }
+
+    @media (max-width: 680px) {
+      .hero-main,
+      .hero-side,
+      .panel-head,
+      .toolbar,
+      .detail-summary,
+      .nav-scroll,
+      .content-scroll,
+      .detail-scroll {
+        padding-left: 16px;
+        padding-right: 16px;
+      }
+
+      .hero-stat-grid,
+      .detail-stat-grid,
+      .hero-summary-row,
+      .qualification-grid,
+      .overview-grid,
+      .info-grid,
+      .people-grid,
+      .equipment-grid,
+      .achievement-grid,
+      .attachment-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .timeline-item {
+        grid-template-columns: 1fr;
+      }
+
+      .entity-top.builder-top {
+        grid-template-columns: 1fr;
+        align-items: start;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <div class="top-sticky-shell">
+      <section class="hero">
+        <div class="hero-top-right">
+          <div class="hero-case-card" id="heroCaseNo"></div>
+          <div class="hero-summary-row" id="heroSummary"></div>
+        </div>
+        <div class="hero-main">
+          <h1>北京城建示范工程有限公司<span class="hero-name-code">91110108MA0ABCDX8U</span></h1>
+        </div>
+      </section>
+
+      <section class="qualification-board" id="qualificationBoard"></section>
+    </div>
+
+    <section class="workspace">
+      <aside class="nav-panel">
+        <div class="panel-head">
+          <h2>核查模块导航</h2>
+        </div>
+        <div class="nav-scroll" id="moduleList"></div>
+      </aside>
+
+      <main class="content-panel">
+        <div class="content-top">
+          <div class="panel-head" id="contentHead">
+            <h2 id="contentTitle">模块展示</h2>
+            <p id="contentDesc">请选择左侧模块，查看该类核查内容的展示设计。</p>
+          </div>
+          <div class="toolbar">
+            <div class="toolbar-row" id="subTypeFilters"></div>
+            <div class="toolbar-search" id="toolbarSearch">
+              <div class="filter-select" id="majorFilterWrap" hidden>
+                <button id="majorFilterToggle" class="filter-select-toggle" type="button">
+                  <span class="filter-select-value" id="majorFilterValue">
+                    <span class="filter-select-placeholder">注册专业</span>
+                  </span>
+                  <span class="filter-select-arrow">展开</span>
+                </button>
+                <div class="filter-dropdown" id="majorFilterDropdown" hidden>
+                  <input id="majorFilterInput" class="search-input" type="search" placeholder="输入专业关键字筛选">
+                  <div class="filter-option-list" id="majorFilterOptions"></div>
+                </div>
+              </div>
+              <input id="searchInput" class="search-input" type="search" placeholder="搜索模块内的字段、对象或附件名称">
+              <button id="searchButton" class="search-button" type="button">查询</button>
+            </div>
+          </div>
+        </div>
+        <div class="content-scroll" id="contentBody"></div>
+      </main>
+
+      <aside class="detail-panel">
+        <div class="panel-head">
+          <h3>核查信息</h3>
+          <p>展示此资质的监理证书核查标准，核查结论和核查附件。</p>
+        </div>
+        <div class="detail-scroll" id="detailBody"></div>
+      </aside>
+    </section>
+  </div>
+
+  <div class="preview-modal" id="previewModal" hidden>
+    <div class="preview-dialog">
+      <div class="preview-dialog-head">
+        <div>
+          <h4 id="previewTitle">附件预览</h4>
+          <p id="previewSubtitle">目录卡片附件在线预览</p>
+        </div>
+        <button class="preview-dialog-close" id="previewClose" type="button">×</button>
+      </div>
+      <div class="preview-dialog-body">
+        <div class="preview-sheet" id="previewSheet"></div>
+        <div class="preview-dialog-actions">
+          <button class="entity-action-btn" id="previewPrint" type="button">打印</button>
+          <button class="entity-action-btn" id="previewConfirm" type="button">关闭</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const enterpriseProfile = {
+      name: "北京东方建设监理有限公司",
+      code: "911101087239658344",
+      caseNo: "京建核（监理）字[2026]第018号",
+      qualification: "房屋建筑工程监理甲级资质核查",
+      qualifications: [
+        "房屋建筑工程监理甲级资质",
+        "市政公用工程监理甲级资质",
+        "机电安装工程监理乙级资质",
+        "工程项目管理资质"
+      ],
+      batch: "2026年5月第2批",
+      reviewStages: ["启动核查", "待企业上传核查资料", "初审", "复审", "整改", "复核", "结案"],
+      reviewStage: "初审",
+      deadline: "2026-05-28",
+      sharedAttachments: [
+        { name: "营业执照", state: "已上传", desc: "企业基础证照，供监理企业、监理人员、监理项目模块统一引用。" },
+        { name: "监理资质证书", state: "有效", desc: "企业监理资质等级及业务范围证明，供监理证书核查引用。" }
+      ]
+    };
+
+    const modules = [
+      {
+        id: "personnel",
+        name: "监理人员核查",
+        navName: "监理师核查",
+        label: "人员",
+        desc: "围绕监理师、注册人员、技术负责人展示监理证书、注册状态、执业状态和社保归属等核查内容。",
+        status: "核心模块",
+        level: "primary",
+        totals: {
+          objects: "42人",
+          passed: "31人",
+          pending: "7人",
+          risk: "4人"
+        },
+        subtypes: ["监理师", "注册人员", "技术负责人"],
+        overview: [],
+        sections: [
+          {
+            title: "监理人员列表",
+            desc: "重点展示监理证书编号、注册专业、注册状态、执业状态和社保归属。",
+            type: "cards",
+            cards: [
+              {
+                subtype: "监理师",
+                name: "刘建华",
+                meta: ["身份证号：110101197904153216", "注册专业：房屋建筑工程", "监理证书编号：BJZJL202300018", "注册状态：正常", "执业状态：在岗", "社保缴纳情况：正常"],
+                badges: []
+              },
+              {
+                subtype: "监理师",
+                name: "张晓峰",
+                meta: ["身份证号：110101198103283215", "注册专业：市政公用工程", "监理证书编号：BJZJL202300052", "注册状态：正常", "执业状态：在岗", "社保缴纳情况：正常"],
+                badges: []
+              },
+              {
+                subtype: "注册人员",
+                name: "李文静",
+                meta: ["身份证号：110101198612064226", "注册专业：机电安装工程", "注册证书编号：BJZYJL202300114", "注册状态：正常", "执业状态：在岗", "社保缴纳情况：正常"],
+                badges: [
+                  { text: "核查通过", type: "ok" },
+                  { text: "证书信息一致", type: "primary" }
+                ]
+              },
+              {
+                subtype: "注册人员",
+                name: "高宁",
+                meta: ["身份证号：110101198908184251", "注册专业：房屋建筑工程", "注册证书编号：BJZYJL202300128", "注册状态：正常", "执业状态：待复核", "社保缴纳情况：正常"],
+                badges: [
+                  { text: "待补执业变更页", type: "warn" },
+                  { text: "需人工复核", type: "risk" }
+                ]
+              },
+              {
+                subtype: "技术负责人",
+                name: "周海宁",
+                meta: ["身份证号：110101199202117612", "职称等级：高级工程师", "任职状态：在岗", "执业状态：有效", "社保缴纳情况：正常"],
+                badges: [
+                  { text: "核查通过", type: "ok" },
+                  { text: "证书可预览", type: "primary" }
+                ]
+              },
+              {
+                subtype: "技术负责人",
+                name: "徐佳",
+                meta: ["身份证号：110101199305281736", "职称等级：工程师", "任职状态：待复核", "执业状态：有效", "社保缴纳情况：正常"],
+                badges: [
+                  { text: "待补继续教育记录", type: "warn" },
+                  { text: "需复核从业状态", type: "risk" }
+                ]
+              }
+            ]
+          }
+        ],
+        details: {
+          standards: {
+            "监理师": [
+              "核对监理师人数是否满足当前监理资质配置要求。",
+              "核对监理证书编号、注册专业、注册单位与申报企业是否一致。",
+              "核对执业状态、项目任职记录和社保归属是否真实有效。",
+              "核对证书附件、变更记录和继续教育记录是否完整。"
+            ],
+            "注册人员": [
+              "核对注册人员人数和专业结构是否满足监理资质要求。",
+              "核对注册证书编号、注册专业、注册状态是否与申报材料一致。",
+              "核对执业状态、从业经历和社保连续性是否真实有效。",
+              "核对证书附件、变更页和继续教育记录是否齐全。"
+            ],
+            "技术负责人": [
+              "核对技术负责人数量是否满足当前监理资质配置要求。",
+              "核对职称等级、任职状态、执业状态是否真实有效。",
+              "核对社保归属、任职状态与申报企业是否一致。",
+              "核对任命文件、职称证书附件和继续教育记录是否完整可核。"
+            ]
+          },
+          attention: {
+            "监理师": [
+              "重点关注注册专业是否覆盖当前申报监理资质主项。",
+              "重点关注注册单位、执业单位和申报企业是否一致。",
+              "重点关注监理师任职项目是否与执业状态匹配。",
+              "重点关注社保缴纳连续性和证书变更记录。"
+            ],
+            "注册人员": [
+              "重点关注注册人员的专业结构和数量配置。",
+              "重点关注注册证书编号、注册状态和从业记录是否一致。",
+              "重点关注多企业重复注册或挂靠风险。",
+              "重点关注继续教育记录和执业变更页完整性。"
+            ],
+            "技术负责人": [
+              "重点关注技术负责人职称等级和任职状态是否有效。",
+              "重点关注任职状态与实际在岗情况是否一致。",
+              "重点关注社保归属是否在申报企业名下。",
+              "重点关注任命文件和职称证书附件是否清晰完整。"
+            ]
+          },
+          alerts: {
+            "监理师": [
+              "监理证书编号与申报信息不一致。",
+              "注册专业不匹配当前监理资质主项要求。",
+              "执业状态异常或社保不在申报企业名下。"
+            ],
+            "注册人员": [
+              "注册人员数量不足或专业结构不完整。",
+              "注册证书变更记录缺失或执业状态异常。",
+              "存在重复注册、跨企业挂靠风险。"
+            ],
+            "技术负责人": [
+              "技术负责人职称等级或任命文件异常。",
+              "任职状态与在岗情况不一致。",
+              "社保归属异常或继续教育记录缺失。"
+            ]
+          },
+          conclusion: {
+            pass: "监理人员证书信息、注册状态、执业状态和社保归属满足监理资质要求，可判定为达标。",
+            fail: "监理人员证书、注册状态、执业状态或社保归属任一核心要件不满足要求时，应判定为不达标。"
+          },
+          attachments: [
+            "监理师证书附件",
+            "注册人员证书附件",
+            "技术负责人职称附件",
+            "执业变更记录",
+            "继续教育记录",
+            "社保缴纳证明"
+          ]
+        }
+      },
+      {
+        id: "equipment",
+        name: "监理企业",
+        label: "企业",
+        desc: "展示监理企业基础信息、资质证书、人员配置和信用状态等监理证书核查内容。",
+        status: "企业核查",
+        level: "accent",
+        totals: {
+          objects: "6项",
+          passed: "4项",
+          pending: "1项",
+          risk: "1项"
+        },
+        subtypes: ["企业基本信息", "资质证书", "人员配置"],
+        overview: [],
+        sections: [
+          {
+            title: "监理企业目录",
+            desc: "重点展示企业资质等级、资质有效期、总监数量和信用状态。",
+            type: "cards",
+            cards: [
+              {
+                subtype: "企业基本信息",
+                name: "北京东方建设监理有限公司",
+                meta: ["企业类型：有限责任公司", "统一社会信用代码：911101087239658344", "法定代表人：刘建华"],
+                badges: [
+                  { text: "核查通过", type: "ok" },
+                  { text: "基础信息一致", type: "primary" }
+                ]
+              },
+              {
+                subtype: "资质证书",
+                name: "房屋建筑工程监理甲级资质",
+                meta: ["资质等级：甲级", "证书编号：JLQY-BJ-2026-018", "有效期：2028-11-30"],
+                badges: [
+                  { text: "核查通过", type: "ok" },
+                  { text: "证书在有效期内", type: "primary" }
+                ]
+              },
+              {
+                subtype: "人员配置",
+                name: "监理人员配置情况",
+                meta: ["总监理工程师：6人", "专业监理工程师：18人", "监理员：18人"],
+                badges: [
+                  { text: "待复核配置明细", type: "warn" },
+                  { text: "需人工确认", type: "risk" }
+                ]
+              }
+            ]
+          }
+        ],
+        details: {
+          standards: [
+            "核对企业名称、统一社会信用代码和法定代表人是否与申报材料一致。",
+            "核对监理资质等级、证书编号、有效期和业务范围是否满足申报要求。",
+            "核对监理企业人员配置总量与资质要求是否匹配。",
+            "核对企业信用状态、处罚记录和异常名录情况。"
+          ],
+          alerts: [
+            "企业资质证书过期、等级不符或业务范围不匹配时，应直接提示异常。",
+            "人员配置数量与资质要求不一致时，应提示需复核。",
+            "企业信用状态异常或存在处罚记录时，应重点提醒。"
+          ],
+          conclusion: {
+            pass: "监理企业基础信息、资质证书和人员配置满足要求时，可判定为达标。",
+            fail: "监理企业资质证书、基础信息或人员配置存在冲突时，应判定为不达标。"
+          },
+          attachments: [
+            "监理资质证书附件",
+            "企业信用信息截图",
+            "人员配置汇总表",
+            "法定代表人身份证明"
+          ]
+        }
+      },
+      {
+        id: "achievement",
+        name: "监理项目",
+        label: "项目",
+        desc: "展示监理项目名称、委托合同、项目阶段和履约证明等监理证书口径核查内容。",
+        status: "项目核查",
+        level: "warn",
+        totals: {
+          objects: "5项",
+          passed: "3项",
+          pending: "1项",
+          risk: "1项"
+        },
+        subtypes: ["房建监理项目", "市政监理项目"],
+        overview: [],
+        sections: [
+          {
+            title: "监理项目目录",
+            desc: "重点展示监理合同额、项目阶段、竣工时间和履约证明。",
+            type: "cards",
+            cards: [
+              {
+                subtype: "房建监理项目",
+                name: "朝阳区保障房监理项目",
+                meta: ["合同额：620万元", "项目阶段：已竣工", "竣工时间：2025-11-26"],
+                badges: [
+                  { text: "核查通过", type: "ok" },
+                  { text: "履约资料完整", type: "primary" }
+                ]
+              },
+              {
+                subtype: "房建监理项目",
+                name: "海淀科技园办公楼监理项目",
+                meta: ["合同额：480万元", "项目阶段：已竣工", "竣工时间：2025-08-18"],
+                badges: [
+                  { text: "核查通过", type: "ok" },
+                  { text: "验收资料完整", type: "primary" }
+                ]
+              },
+              {
+                subtype: "市政监理项目",
+                name: "顺义道路综合整治监理项目",
+                meta: ["合同额：350万元", "项目阶段：在建", "履约证明：待补"],
+                badges: [
+                  { text: "需人工复核", type: "warn" },
+                  { text: "不应归入已完项目", type: "risk" }
+                ]
+              }
+            ]
+          }
+        ],
+        details: {
+          standards: [
+            "核对监理项目名称、合同额、项目阶段和监理范围是否与申报材料一致。",
+            "核对竣工时间、履约证明和验收资料是否完整。",
+            "核对总监理工程师、专业监理工程师项目任职记录是否匹配。",
+            "核对项目是否满足当前资质或业绩采信要求。"
+          ],
+          alerts: [
+            "项目阶段、竣工时间和履约证明前后矛盾时，应直接标记异常。",
+            "总监任职记录与项目履约证明不一致时，应重点复核。",
+            "合同签章页、监理合同或验收资料缺失时，应限制直接采信。"
+          ],
+          conclusion: {
+            pass: "监理项目合同、阶段、履约证明和验收资料完整时，可判定为达标。",
+            fail: "监理项目合同、阶段或履约资料存在冲突时，应判定为不达标。"
+          },
+          attachments: [
+            "监理委托合同",
+            "总监任命文件",
+            "履约证明材料",
+            "竣工验收资料"
+          ]
+        }
+      },
+      {
+        id: "attachment",
+        name: "核查附件",
+        label: "附件",
+        desc: "集中展示监理资质证书和企业基础材料，供各模块统一引用。",
+        status: "核查附件",
+        level: "primary",
+        totals: {
+          objects: "6份",
+          passed: "4份",
+          pending: "1份",
+          risk: "1份"
+        },
+        subtypes: ["营业执照", "法定代表人身份证", "监理资质证书"],
+        overview: [],
+        sections: [
+          {
+            title: "核查附件目录",
+            desc: "附件按企业证书和人员证书分组展示，重点查看有效期和引用范围。",
+            type: "cards",
+            cards: [
+              {
+                subtype: "营业执照",
+                name: "营业执照",
+                meta: ["统一社会信用代码：911101087239658344", "有效状态：存续", "适用范围：全模块引用"],
+                badges: [
+                  { text: "核查通过", type: "ok" },
+                  { text: "在线预览", type: "primary" }
+                ]
+              },
+              {
+                subtype: "法定代表人身份证",
+                name: "法定代表人身份证",
+                meta: ["证件状态：正反面齐全", "清晰度：可辨识", "适用范围：企业基础身份核查"],
+                badges: [
+                  { text: "核查通过", type: "ok" },
+                  { text: "在线预览", type: "primary" }
+                ]
+              },
+              {
+                subtype: "监理资质证书",
+                name: "监理资质证书",
+                meta: ["资质等级：甲级", "有效期：2028-11-30", "适用范围：监理企业核查"],
+                badges: [
+                  { text: "核查通过", type: "ok" },
+                  { text: "在线预览", type: "primary" }
+                ]
+              }
+            ]
+          }
+        ],
+        details: {
+          standards: [
+            "核查附件应与人员、企业、项目模块分开维护并统一引用。",
+            "监理资质证书应展示有效期、证书编号和引用范围。",
+            "企业基础材料和核查附件应支持在线预览和打印。"
+          ],
+          alerts: [
+            "监理资质证书过期或缺少最新变更页时，应提示异常。",
+            "证书编号、企业名称或人员姓名与基础信息不一致时，应提示联动风险。",
+            "关键附件无法预览、盖章页不完整或版本记录缺失时，应直接标记异常。"
+          ],
+          conclusion: {
+            pass: "监理资质证书和企业基础材料完整、有效且可引用时，可判定为达标。",
+            fail: "监理资质证书或企业基础材料缺失、过期或冲突时，应判定为不达标。"
+          },
+          attachments: [
+            "营业执照",
+            "法定代表人身份证",
+            "监理资质证书"
+          ]
+        }
+      }
+    ];
+
+    const state = {
+      activeModuleId: "personnel",
+      activeSubtype: "监理师",
+      search: "",
+      selectedMajors: [],
+      majorKeyword: "",
+      majorDropdownOpen: false,
+      previewData: null,
+      cardSelection: {},
+      cardConclusion: {},
+      selectedPersonnelKey: "",
+      selectedCardKey: ""
+    };
+
+    const elements = {
+      heroCaseNo: document.getElementById("heroCaseNo"),
+      heroSummary: document.getElementById("heroSummary"),
+      qualificationBoard: document.getElementById("qualificationBoard"),
+      moduleList: document.getElementById("moduleList"),
+      contentHead: document.getElementById("contentHead"),
+      contentTitle: document.getElementById("contentTitle"),
+      contentDesc: document.getElementById("contentDesc"),
+      subTypeFilters: document.getElementById("subTypeFilters"),
+      toolbarSearch: document.getElementById("toolbarSearch"),
+      majorFilterWrap: document.getElementById("majorFilterWrap"),
+      majorFilterToggle: document.getElementById("majorFilterToggle"),
+      majorFilterValue: document.getElementById("majorFilterValue"),
+      majorFilterDropdown: document.getElementById("majorFilterDropdown"),
+      majorFilterInput: document.getElementById("majorFilterInput"),
+      majorFilterOptions: document.getElementById("majorFilterOptions"),
+      searchInput: document.getElementById("searchInput"),
+      searchButton: document.getElementById("searchButton"),
+      contentBody: document.getElementById("contentBody"),
+      detailBody: document.getElementById("detailBody"),
+      detailHeadText: document.querySelector(".detail-panel .panel-head p"),
+      previewModal: document.getElementById("previewModal"),
+      previewTitle: document.getElementById("previewTitle"),
+      previewSubtitle: document.getElementById("previewSubtitle"),
+      previewSheet: document.getElementById("previewSheet"),
+      previewClose: document.getElementById("previewClose"),
+      previewPrint: document.getElementById("previewPrint"),
+      previewConfirm: document.getElementById("previewConfirm")
+    };
+
+    function getModule() {
+      return modules.find((item) => item.id === state.activeModuleId);
+    }
+
+    function isBuilderModuleView(module = getModule()) {
+      return module?.id === "personnel" && state.activeSubtype === "监理师";
+    }
+
+    function getBuilderMajor(card) {
+      const majorMeta = (card.meta || []).find((item) => item.startsWith("注册专业：")) || "";
+      return majorMeta.replace(/^注册专业：/, "").trim();
+    }
+
+    function getBuilderMajorOptions() {
+      const personnelModule = modules.find((module) => module.id === "personnel");
+      const cardsSection = personnelModule?.sections?.find((section) => section.type === "cards");
+      const cards = (cardsSection?.cards || []).filter((card) => card.subtype === "监理师");
+      return [...new Set(cards.map((card) => getBuilderMajor(card)).filter(Boolean))];
+    }
+
+    function getVisibleBuilderMajorOptions() {
+      const keyword = state.majorKeyword.trim().toLowerCase();
+      const options = getBuilderMajorOptions();
+      if (!keyword) return options;
+      return options.filter((item) => item.toLowerCase().includes(keyword));
+    }
+
+    function getCardAttachmentActions(module, card) {
+      const isSupervisorCard = module.id === "personnel" && card.subtype === "监理师";
+      const isRegisteredCard = module.id === "personnel" && card.subtype === "注册人员";
+      const isTechLeaderCard = module.id === "personnel" && card.subtype === "技术负责人";
+      const isEquipmentCard = module.id === "equipment";
+      const isAttachmentCard = module.id === "attachment" && ["营业执照", "法定代表人身份证", "监理资质证书"].includes(card.subtype);
+
+      if (!(isRegisteredCard || isTechLeaderCard || isEquipmentCard || isAttachmentCard)) {
+        return [];
+      }
+
+      const attachmentLabel = isAttachmentCard
+        ? card.name
+        : isEquipmentCard
+        ? "企业附件"
+        : isRegisteredCard
+          ? "注册人员证书附件"
+          : "技术负责人职称附件";
+
+      return [
+        { text: "在线预览", type: "preview", label: attachmentLabel, thumbText: "PDF\n附件" },
+        { text: "打印", type: "print", label: attachmentLabel }
+      ];
+    }
+
+    function openPreviewModal(module, card, actionType = "preview") {
+      const actions = getCardAttachmentActions(module, card);
+      const previewAction = actions.find((item) => item.type === "preview");
+      const attachmentTitle = previewAction?.label || "附件资料";
+      state.previewData = {
+        moduleName: module.name,
+        cardName: (card.name || "").replace(/\s*\/\s*(监理师|注册人员|技术负责人)\s*$/, ""),
+        attachmentTitle,
+        actionType
+      };
+      renderPreviewModal();
+    }
+
+    function closePreviewModal() {
+      state.previewData = null;
+      renderPreviewModal();
+    }
+
+    function renderPreviewModal() {
+      const data = state.previewData;
+      elements.previewModal.hidden = !data;
+      if (!data) return;
+
+      elements.previewTitle.textContent = `${data.cardName} - ${data.attachmentTitle}`;
+      elements.previewSubtitle.textContent = `${data.moduleName}目录附件在线预览，可直接打印。`;
+      elements.previewSheet.innerHTML = `
+        <div class="preview-sheet-head">
+          <strong>${data.attachmentTitle}</strong>
+          <span class="badge primary">${data.moduleName}</span>
+        </div>
+        <div class="preview-sheet-meta">
+          <div>当前对象：${data.cardName}</div>
+          <div>附件类型：${data.attachmentTitle}</div>
+          <div>预览说明：当前为示例预览页，可展示扫描件、PDF 页签、证书附件或设备产权资料。</div>
+          <div>打印说明：点击下方“打印”可打印当前预览内容。</div>
+        </div>
+      `;
+    }
+
+    function renderDetailHeadText(module) {
+      if (!elements.detailHeadText) return;
+
+      if (module.id === "attachment") {
+        const selectedCard = getSelectedCard(module);
+        const attachmentSubtype = selectedCard?.subtype || state.activeSubtype;
+        if (attachmentSubtype === "营业执照") {
+          elements.detailHeadText.textContent = "营业执照在有效期内。";
+          return;
+        }
+        if (attachmentSubtype === "法定代表人身份证") {
+          elements.detailHeadText.textContent = "法定代表人身份证附件已上传。";
+          return;
+        }
+        if (attachmentSubtype === "监理资质证书") {
+          elements.detailHeadText.textContent = "监理资质证书在有效期内。";
+          return;
+        }
+      }
+
+      if (module.id === "personnel") {
+        const subtypeText = state.activeSubtype || "人员";
+        elements.detailHeadText.textContent = `展示此资质的${subtypeText}监理证书核查标准、核查结论和核查附件。`;
+        return;
+      }
+
+      if (module.id === "equipment") {
+        elements.detailHeadText.textContent = "展示此资质的监理企业核查标准、核查结论和核查附件。";
+        return;
+      }
+
+      if (module.id === "achievement") {
+        elements.detailHeadText.textContent = "展示此资质的监理项目核查标准、核查结论和核查附件。";
+        return;
+      }
+
+      elements.detailHeadText.textContent = "展示核查结论和核查附件。";
+    }
+
+    function getSubtypeOptions(module) {
+      return module.id === "personnel" ? module.subtypes : ["全部", ...module.subtypes];
+    }
+
+    function getDefaultSubtype(module) {
+      return module.id === "personnel" ? module.subtypes[0] : "全部";
+    }
+
+    function getLevelBadgeClass(level) {
+      if (level === "warn") return "warn";
+      if (level === "accent") return "ok";
+      return "primary";
+    }
+
+    function getSubtypeOptions(module) {
+      return module.id === "personnel" || module.id === "equipment" ? module.subtypes : ["鍏ㄩ儴", ...module.subtypes];
+    }
+
+    function getDefaultSubtype(module) {
+      return module.id === "personnel" || module.id === "equipment" ? module.subtypes[0] : "鍏ㄩ儴";
+    }
+
+    function getSubtypeOptions(module) {
+      return module.id === "personnel" || module.id === "equipment" ? module.subtypes : ["\u5168\u90e8", ...module.subtypes];
+    }
+
+    function getDefaultSubtype(module) {
+      return module.id === "personnel" || module.id === "equipment" ? module.subtypes[0] : "\u5168\u90e8";
+    }
+
+    function getSubtypeOptions(module) {
+      return module.id === "personnel" ? module.subtypes : ["\u5168\u90e8", ...module.subtypes];
+    }
+
+    function getDefaultSubtype(module) {
+      return module.id === "personnel" ? module.subtypes[0] : "\u5168\u90e8";
+    }
+
+    function getToolbarSubtypeOptions(module) {
+      if (module.id === "personnel") {
+        return module.subtypes.filter((option) => option !== "监理师" && option !== "注册人员" && option !== "技术负责人");
+      }
+      return getSubtypeOptions(module);
+    }
+
+    function getFilteredCards(cards) {
+      let nextCards = cards;
+      if (state.activeSubtype !== "全部") {
+        nextCards = nextCards.filter((card) => !card.subtype || card.subtype === state.activeSubtype);
+      }
+      if (isBuilderModuleView() && state.selectedMajors.length) {
+        nextCards = nextCards.filter((card) => state.selectedMajors.includes(getBuilderMajor(card)));
+      }
+      return nextCards;
+    }
+
+    function getCardKey(module, card) {
+      return `${module.id}::${card.subtype || ""}::${card.name || ""}`;
+    }
+
+    function getSelectedCard(module) {
+      const cardsSection = module.sections?.find((section) => section.type === "cards");
+      if (!cardsSection) return null;
+      const cards = getFilteredCards(cardsSection.cards || []);
+      return cards.find((card) => getCardKey(module, card) === state.selectedCardKey) || cards[0] || null;
+    }
+
+    function ensureSelectedCard(module) {
+      const cardsSection = module.sections?.find((section) => section.type === "cards");
+      const cards = cardsSection ? getFilteredCards(cardsSection.cards || []) : [];
+      if (!cards.length) {
+        state.selectedCardKey = "";
+        return;
+      }
+      if (!cards.some((card) => getCardKey(module, card) === state.selectedCardKey)) {
+        state.selectedCardKey = getCardKey(module, cards[0]);
+      }
+    }
+
+    function getConclusionStateFromBadge(badge) {
+      if (!badge) return "";
+      if (badge.type === "ok") return "pass";
+      if (badge.type === "risk") return "fail";
+      return "";
+    }
+
+    function getNormalizedResultBadge(badge) {
+      if (!badge) return null;
+      if (badge.type === "ok") return { text: "达标", type: "ok" };
+      if (badge.type === "risk") return { text: "不达标", type: "risk" };
+      return { text: "待核查", type: "warn" };
+    }
+
+    function shouldEnableCatalogConclusion(module) {
+      return module.id === "personnel" || module.id === "equipment" || module.id === "achievement" || module.id === "attachment";
+    }
+
+    function getCardConclusionState(module, card) {
+      const cardKey = getCardKey(module, card);
+      if (state.cardConclusion[cardKey]) {
+        return state.cardConclusion[cardKey];
+      }
+      return getConclusionStateFromBadge((card.badges || [])[0] || null);
+    }
+
+    function setCardConclusion(cardKey, conclusion) {
+      if (!conclusion) {
+        delete state.cardConclusion[cardKey];
+        return;
+      }
+      state.cardConclusion[cardKey] = conclusion;
+    }
+
+    function getResultBadgeFromConclusion(conclusion) {
+      if (conclusion === "pass") return { text: "达标", type: "ok" };
+      if (conclusion === "fail") return { text: "不达标", type: "risk" };
+      return { text: "待核查", type: "warn" };
+    }
+
+    function getEligibleCards(module) {
+      const cardsSection = module.sections?.find((section) => section.type === "cards");
+      return cardsSection ? getFilteredCards(cardsSection.cards || []) : [];
+    }
+
+    function getSelectedCatalogCardKeys(module) {
+      const cards = getEligibleCards(module);
+      return cards
+        .map((card) => getCardKey(module, card))
+        .filter((key) => !!state.cardSelection[key]);
+    }
+
+    function getSelectedCardDisplayName(module, card) {
+      if (!card) return "";
+      if (module.id !== "personnel") return card.name || "";
+      return (card.name || "").replace(/\s*\/\s*(监理师|注册人员|技术负责人)\s*$/, "");
+    }
+
+    function getPersonnelCardKey(card) {
+      return `${card.subtype || ""}::${card.name || ""}`;
+    }
+
+    function getSelectedPersonnelCard(module) {
+      if (module.id !== "personnel") return null;
+      const cardsSection = module.sections?.find((section) => section.type === "cards");
+      if (!cardsSection) return null;
+      const cards = getFilteredCards(cardsSection.cards || []);
+      return cards.find((card) => getPersonnelCardKey(card) === state.selectedPersonnelKey) || cards[0] || null;
+    }
+
+    function ensureSelectedPersonnelCard(module) {
+      if (module.id !== "personnel") {
+        state.selectedPersonnelKey = "";
+        return;
+      }
+      const cardsSection = module.sections?.find((section) => section.type === "cards");
+      const cards = cardsSection ? getFilteredCards(cardsSection.cards || []) : [];
+      if (!cards.length) {
+        state.selectedPersonnelKey = "";
+        return;
+      }
+      if (!cards.some((card) => getPersonnelCardKey(card) === state.selectedPersonnelKey)) {
+        state.selectedPersonnelKey = getPersonnelCardKey(cards[0]);
+      }
+    }
+
+    function getFilteredSections(module) {
+      const keyword = state.search.trim().toLowerCase();
+      const selectedMajors = isBuilderModuleView(module) ? state.selectedMajors : [];
+      if (!keyword && !selectedMajors.length) return module.sections;
+
+      return module.sections.filter((section) => {
+        if (section.type === "cards") {
+          return getFilteredCards(section.cards || []).some((card) => {
+            if (!keyword) return true;
+            const bucket = [
+              card.name,
+              ...(card.meta || []),
+              ...((card.badges || []).map((badge) => badge.text))
+            ].join(" ").toLowerCase();
+            return bucket.includes(keyword);
+          });
+        }
+
+        const bucket = [
+          section.title,
+          section.desc,
+          ...(section.items || []).flat(),
+          ...(section.timeline || []).flat()
+        ].join(" ").toLowerCase();
+        return bucket.includes(keyword);
+      });
+    }
+
+    function renderMajorFilter() {
+      const enabled = isBuilderModuleView();
+      elements.majorFilterWrap.hidden = !enabled;
+      elements.toolbarSearch.classList.toggle("builder-search", enabled);
+
+      if (!enabled) {
+        state.majorDropdownOpen = false;
+        state.majorKeyword = "";
+        elements.majorFilterDropdown.hidden = true;
+        return;
+      }
+
+      elements.majorFilterValue.innerHTML = state.selectedMajors.length
+        ? state.selectedMajors.map((item) => `<span class="badge primary filter-chip"><span>${item}</span><span class="filter-chip-remove" data-remove-major="${item}" title="删除">×</span></span>`).join("")
+        : `<span class="filter-select-placeholder">监理专业</span>`;
+      elements.majorFilterDropdown.hidden = !state.majorDropdownOpen;
+      elements.majorFilterInput.value = state.majorKeyword;
+
+      const visibleOptions = getVisibleBuilderMajorOptions();
+      elements.majorFilterOptions.innerHTML = visibleOptions.length
+        ? visibleOptions.map((item) => `
+            <button class="filter-option ${state.selectedMajors.includes(item) ? "active" : ""}" type="button" data-major-option="${item}">
+              ${item}
+            </button>
+          `).join("")
+        : `<div class="info-item"><span>未匹配到专业</span><strong>请调整关键字后继续查询。</strong></div>`;
+    }
+
+    function renderHeroSummary() {
+      elements.heroCaseNo.innerHTML = `
+        <span>案件编号</span>
+        <strong>${enterpriseProfile.caseNo}</strong>
+      `;
+
+      elements.heroSummary.innerHTML = `
+        <div class="hero-summary-item combined">
+          <span>${enterpriseProfile.reviewStages.join(" / ")}</span>
+          <strong>当前：${enterpriseProfile.reviewStage} / ${enterpriseProfile.deadline}</strong>
+        </div>
+      `;
+    }
+
+    function renderQualificationBoard() {
+      elements.qualificationBoard.innerHTML = `
+        <div class="qualification-board-head">
+          <div>
+            <h2>核查资质<span>本次申报涉及监理资质清单，当前核查资质单独高亮。</span></h2>
+          </div>
+          <span class="badge primary">共 ${enterpriseProfile.qualifications.length} 项</span>
+        </div>
+        <div class="qualification-grid">
+          ${enterpriseProfile.qualifications.map((item) => `
+            <article class="qualification-item ${item === enterpriseProfile.qualification.replace("核查", "") ? "current" : ""}">
+              <span>${item === enterpriseProfile.qualification.replace("核查", "") ? "当前核查资质" : "关联资质"}</span>
+              <strong>${item}</strong>
+            </article>
+          `).join("")}
+        </div>
+      `;
+    }
+
+    function renderStandardsSection(module) {
+      if (module.id === "personnel") {
+        const standards = module.details.standards || {};
+
+        if (state.activeSubtype !== "全部" && standards[state.activeSubtype]) {
+          return `
+            <section class="focus-card">
+              <h4>${state.activeSubtype}核查标准</h4>
+              <div class="status-list">
+                <div class="status-item">
+                  <ul>
+                    ${standards[state.activeSubtype].map((item) => `<li>${item}</li>`).join("")}
+                  </ul>
+                </div>
+              </div>
+            </section>
+          `;
+        }
+
+        return "";
+      }
+
+      if (module.id === "equipment" || module.id === "achievement" || module.id === "attachment") {
+        return `
+          <section class="focus-card">
+            <h4>\u6838\u67e5\u6807\u51c6</h4>
+            <div class="status-list">
+              <div class="status-item">
+                <ul>
+                  ${module.details.standards.map((item) => `<li>${item}</li>`).join("")}
+                </ul>
+              </div>
+            </div>
+          </section>
+        `;
+      }
+
+      return `
+        <section class="focus-card">
+          <h4>核查标准</h4>
+          <div class="status-list">
+            ${module.details.standards.map((item) => `
+              <div class="status-item">
+                <strong>${item}</strong>
+              </div>
+            `).join("")}
+          </div>
+        </section>
+      `;
+    }
+
+    function renderAlertsSection(module) {
+      if (module.id === "personnel") {
+        const alerts = module.details.alerts || {};
+
+        if (state.activeSubtype !== "全部" && alerts[state.activeSubtype]) {
+          return `
+            <section class="status-card">
+              <h4>${state.activeSubtype}核查异常提醒</h4>
+              <div class="module-tags">
+                ${alerts[state.activeSubtype].map((item) => `
+                  <span class="badge risk">${item}</span>
+                `).join("")}
+              </div>
+            </section>
+          `;
+        }
+
+        return `
+          <section class="status-card">
+            <h4>人员分类核查异常提醒</h4>
+            <div class="status-list">
+              ${Object.entries(alerts).map(([label, items]) => `
+                <div class="status-item">
+                  <strong>${label}</strong>
+                  <div class="module-tags">
+                    ${items.map((item) => `
+                      <span class="badge risk">${item}</span>
+                    `).join("")}
+                  </div>
+                </div>
+              `).join("")}
+            </div>
+          </section>
+        `;
+      }
+
+      if (module.id === "equipment" || module.id === "achievement" || module.id === "attachment") {
+        return `
+          <section class="status-card">
+            <h4>${module.name}\u6838\u67e5\u5f02\u5e38\u63d0\u9192</h4>
+            <div class="module-tags">
+              ${module.details.alerts.map((item) => `
+                <span class="badge risk">${item}</span>
+              `).join("")}
+            </div>
+          </section>
+        `;
+      }
+
+      return `
+        <section class="status-card">
+          <h4>${module.name}核查异常提醒</h4>
+          <div class="status-list">
+            ${module.details.alerts.map((item) => `
+              <div class="status-item">
+                <strong>${item}</strong>
+              </div>
+            `).join("")}
+          </div>
+        </section>
+      `;
+    }
+
+    function renderAttentionSection(module) {
+      if (module.id === "personnel" && state.activeSubtype !== "全部") {
+        const items = module.details.attention?.[state.activeSubtype] || [];
+        if (!items.length) return "";
+
+        return `
+          <section class="focus-card">
+            <h4>${state.activeSubtype}核查关注内容</h4>
+            <div class="status-list">
+              ${items.map((item) => `
+                <div class="status-item">
+                  <strong>${item}</strong>
+                </div>
+              `).join("")}
+            </div>
+          </section>
+        `;
+      }
+
+      return "";
+    }
+
+    function renderConclusionSection(module) {
+      const groupName = `conclusion-${module.id}-${state.activeSubtype}`;
+      const selectedCard = getSelectedCard(module);
+      const selectedCardName = getSelectedCardDisplayName(module, selectedCard);
+      const defaultConclusion = selectedCard ? getCardConclusionState(module, selectedCard) : "";
+      return `
+        <section class="status-card">
+          <h4>核查结论</h4>
+          ${selectedCardName ? `<p>${selectedCardName}</p>` : ""}
+          <div class="conclusion-options">
+            <label class="status-item conclusion-option">
+              <div class="conclusion-choice">
+                <input type="radio" name="${groupName}" value="pass" ${defaultConclusion === "pass" ? "checked" : ""}>
+                <strong>达标</strong>
+              </div>
+            </label>
+            <label class="status-item conclusion-option">
+              <div class="conclusion-choice">
+                <input type="radio" name="${groupName}" value="fail" ${defaultConclusion === "fail" ? "checked" : ""}>
+                <strong>不达标</strong>
+              </div>
+            </label>
+          </div>
+          <div class="form-field">
+            <label for="reviewOpinion">核查意见</label>
+            <textarea id="reviewOpinion" class="opinion-textarea" placeholder="请输入本次核查意见，例如：资料基本齐全，个别证书需补充原件复核。"></textarea>
+          </div>
+          <div class="upload-zone">
+            <strong>上传核查附件</strong>
+            <p>支持上传核查过程中的意见附件、问题截图、补充证明材料等，提交进入下一环节前可继续调整。</p>
+            <div class="upload-actions">
+              <span class="badge primary">选择文件</span>
+              <span class="badge warn">支持多附件上传</span>
+            </div>
+          </div>
+          <button class="search-button" type="button" onclick="submitAndReturn()">提交</button>
+        </section>
+      `;
+    }
+
+    function renderAttachmentsSection(module) {
+      return "";
+    }
+
+    function getModuleNavItems() {
+      return modules.flatMap((module) => {
+        if (module.id !== "personnel") {
+          return [{
+            moduleId: module.id,
+            title: module.navName || module.name,
+            desc: module.desc,
+            status: module.status,
+            level: module.level,
+            totals: module.totals
+          }];
+        }
+
+        return [
+          {
+            moduleId: module.id,
+            subtype: "监理师",
+            title: "监理师核查",
+            desc: "重点查看注册专业、监理证书、执业状态和核查结论。",
+            status: module.status,
+            level: module.level,
+            totals: module.totals
+          },
+          {
+            moduleId: module.id,
+            subtype: "注册人员",
+            title: "注册人员核查",
+            desc: "重点查看注册专业、注册证书、执业状态和核查结论。",
+            status: module.status,
+            level: module.level,
+            totals: module.totals
+          },
+          {
+            moduleId: module.id,
+            subtype: "技术负责人",
+            title: "技术负责人核查",
+            desc: "重点查看职称等级、任职状态、社保归属和核查结论。",
+            status: module.status,
+            level: module.level,
+            totals: module.totals
+          }
+        ];
+      });
+    }
+
+    function getNavigationGroups() {
+      const personnelModule = modules.find((module) => module.id === "personnel");
+      const equipmentModule = modules.find((module) => module.id === "equipment");
+      const achievementModule = modules.find((module) => module.id === "achievement");
+      const getPersonnelSubtypeCount = (subtype) => personnelModule
+        ? personnelModule.sections
+            .flatMap((section) => section.cards || [])
+            .filter((card) => card.subtype === subtype).length
+        : 0;
+      const builderCount = getPersonnelSubtypeCount("监理师");
+      const leaderCount = getPersonnelSubtypeCount("注册人员");
+      const workerCount = getPersonnelSubtypeCount("技术负责人");
+      const equipmentCount = equipmentModule?.sections?.flatMap((section) => section.cards || []).length || 0;
+      const achievementCount = achievementModule?.sections?.flatMap((section) => section.cards || []).length || 0;
+
+      return [
+        {
+          title: "监理人员",
+          desc: "归集监理师、注册人员和技术负责人，优先处理监理证书、注册状态和社保资料。",
+          count: "3项",
+          items: [
+            { moduleId: "personnel", subtype: "监理师", title: "监理师", note: `${builderCount}人` },
+            { moduleId: "personnel", subtype: "注册人员", title: "注册人员", note: `${leaderCount}人` },
+            { moduleId: "personnel", subtype: "技术负责人", title: "技术负责人", note: `${workerCount}人` }
+          ]
+        },
+        {
+          title: "核查附件",
+          desc: "集中查看监理资质证书、监理人员证书和企业基础附件。",
+          count: "1项",
+          items: [
+            { moduleId: "attachment", title: "核查附件", note: "集中查看" }
+          ]
+        }
+      ];
+    }
+
+    function renderModuleList() {
+      elements.moduleList.innerHTML = getModuleNavItems().map((item) => `
+        <button class="module-card ${item.moduleId === state.activeModuleId && (!item.subtype || item.subtype === state.activeSubtype) ? "active" : ""}" type="button" data-module-id="${item.moduleId}" ${item.subtype ? `data-module-subtype="${item.subtype}"` : ""}>
+          <div class="module-card-top">
+            <strong>${item.title}</strong>
+            <span class="badge ${getLevelBadgeClass(item.level)}">${item.status}</span>
+          </div>
+          <p>${item.desc}</p>
+          <div class="module-tags">
+            <span class="badge primary">对象 ${module.totals.objects}</span>
+            <span class="badge ok">通过 ${module.totals.passed}</span>
+            <span class="badge warn">待核 ${module.totals.pending}</span>
+            <span class="badge risk">异常 ${module.totals.risk}</span>
+          </div>
+        </button>
+      `).join("");
+    }
+
+    function renderModuleListV2() {
+      elements.moduleList.innerHTML = getNavigationGroups().map((group) => `
+        <section class="module-group-card">
+          <div class="module-group-head">
+            <strong>${group.title}</strong>
+            <span class="badge primary">${group.count}</span>
+          </div>
+          <p>${group.desc}</p>
+          <div class="module-group-list">
+            ${group.items.map((item) => `
+              <button class="module-nav-item ${item.moduleId === state.activeModuleId && (!item.subtype || item.subtype === state.activeSubtype) ? "active" : ""}" type="button" data-module-id="${item.moduleId}" ${item.subtype ? `data-module-subtype="${item.subtype}"` : ""}>
+                <div class="module-nav-item-top">
+                  <strong>${item.title}</strong>
+                  <span class="badge primary">${item.note}</span>
+                </div>
+              </button>
+            `).join("")}
+          </div>
+        </section>
+      `).join("");
+    }
+
+    function renderSubtypeFilters(module) {
+      const options = getToolbarSubtypeOptions(module);
+      if (!(module.id === "personnel" ? module.subtypes : options).includes(state.activeSubtype)) {
+        state.activeSubtype = getDefaultSubtype(module);
+      }
+
+      if (module.id === "equipment" || module.id === "achievement") {
+        state.activeSubtype = "\u5168\u90e8";
+        elements.subTypeFilters.innerHTML = "";
+        return;
+      }
+
+      if (module.id === "attachment") {
+        if (state.activeSubtype !== "\u5168\u90e8" && !module.subtypes.includes(state.activeSubtype)) {
+          state.activeSubtype = "\u5168\u90e8";
+        }
+        elements.subTypeFilters.innerHTML = "";
+        return;
+      }
+
+      elements.subTypeFilters.innerHTML = options.map((option) => `
+        <button class="chip-btn ${option === state.activeSubtype ? "active" : ""}" type="button" data-subtype="${option}">
+          ${option}
+        </button>
+      `).join("");
+    }
+
+    function renderOverview(module) {
+      if (!module.overview?.length) return "";
+      return `
+        <section class="overview-grid">
+          ${module.overview.map((item) => `
+            <article class="overview-card">
+              <span>${item.title}</span>
+              <strong>${item.value}</strong>
+              <p>${item.desc}</p>
+            </article>
+          `).join("")}
+        </section>
+      `;
+    }
+
+    function renderGridSection(section) {
+      return `
+        <section class="section-card">
+          ${showSectionHead ? `
+          <div class="section-head">
+            <div>
+              <h3>${section.title}</h3>
+              <p>${section.desc}</p>
+            </div>
+            <span class="badge primary">字段结构</span>
+          </div>
+          ` : ""}
+          <div class="section-body">
+            <div class="info-grid">
+              ${section.items.map(([label, value]) => `
+                <div class="info-item">
+                  <span>${label}</span>
+                  <strong>${value}</strong>
+                </div>
+              `).join("")}
+            </div>
+          </div>
+        </section>
+      `;
+    }
+
+    function renderCardsSection(section, module) {
+      const gridClass = module.id === "personnel" ? "people-grid" : module.id === "attachment" ? "attachment-grid" : module.id === "achievement" ? "achievement-grid" : "equipment-grid";
+      const cards = getFilteredCards(section.cards);
+      const showSectionHead = module.id !== "personnel" && module.id !== "equipment" && module.id !== "achievement";
+      let builderIndex = 0;
+      let techLeaderIndex = 0;
+      let titlePersonIndex = 0;
+      let techWorkerIndex = 0;
+      let equipmentIndex = 0;
+      let achievementIndex = 0;
+      const enableCatalogConclusion = shouldEnableCatalogConclusion(module);
+      const selectedKeys = getSelectedCatalogCardKeys(module);
+      const allSelected = cards.length && selectedKeys.length === cards.length;
+      return `
+        <section class="section-card">
+          <div class="section-head">
+            <div>
+              <h3>${section.title}</h3>
+              <p>${section.desc}</p>
+            </div>
+            <span class="badge primary">目录卡片</span>
+          </div>
+          <div class="section-body">
+            ${cards.length ? `
+              <div class="${gridClass}">
+                ${cards.map((card, index) => {
+                  const isBuilderCard = module.id === "personnel" && card.subtype === "\u6ce8\u518c\u5efa\u9020\u5e08";
+                  const isTechLeaderCard = module.id === "personnel" && card.subtype === "\u6280\u672f\u8d1f\u8d23\u4eba";
+                  const isTechWorkerCard = module.id === "personnel" && card.subtype === "\u6280\u672f\u5de5\u4eba";
+                  const isWidePersonnelCard = isBuilderCard || isTechLeaderCard || isTechWorkerCard;
+                  const currentIndex = isBuilderCard ? ++builderIndex : "";
+                  const currentTechLeaderIndex = isTechLeaderCard ? ++techLeaderIndex : "";
+                  const currentTechWorkerIndex = isTechWorkerCard ? ++techWorkerIndex : "";
+                  return `
+                  <article class="entity-card ${module.id === "personnel" && card.subtype === "注册建造师" ? "full-span" : ""}">
+                    <div class="entity-top">
+                      ${module.id === "personnel" && card.subtype === "注册建造师" ? `<span class="entity-index">${index + 1}</span>` : ""}
+                      ${module.id === "personnel" && card.subtype === "注册建造师" ? `<span class="entity-index">${index + 1}</span>` : ""}
+                      <h4>${isBuilderCard ? `<span class="entity-index">${currentIndex}</span>` : ""}${card.name}</h4>
+                      ${card.subtype ? `<span class="badge primary">${card.subtype}</span>` : ""}
+                    </div>
+                    <div class="entity-meta">
+                      ${(card.badges || []).map((badge) => `<span class="badge ${badge.type}">${badge.text}</span>`).join("")}
+                    </div>
+                    <p>${card.meta.join("<br>")}</p>
+                  </article>
+                `}).join("")}
+              </div>
+            ` : `
+              <div class="info-item">
+                <span>当前类型下暂无示例卡片</span>
+                <strong>已切换到“${state.activeSubtype}”视角，当前示例数据未配置对应目录卡片。</strong>
+              </div>
+            `}
+          </div>
+        </section>
+      `;
+    }
+
+    function renderTimelineSection(section) {
+      return `
+        <section class="section-card">
+          <div class="section-head">
+            <div>
+              <h3>${section.title}</h3>
+              <p>${section.desc}</p>
+            </div>
+            <span class="badge primary">展示逻辑</span>
+          </div>
+          <div class="section-body">
+            <div class="timeline">
+              ${section.timeline.map(([title, desc]) => `
+                <div class="timeline-item">
+                  <strong>${title}</strong>
+                  <p>${desc}</p>
+                </div>
+              `).join("")}
+            </div>
+          </div>
+        </section>
+      `;
+    }
+
+    function renderGridSection(section) {
+      return `
+        <section class="section-card">
+          <div class="section-head">
+            <div>
+              <h3>${section.title}</h3>
+              <p>${section.desc}</p>
+            </div>
+            <span class="badge primary">字段结构</span>
+          </div>
+          <div class="section-body">
+            <div class="info-grid">
+              ${section.items.map(([label, value]) => `
+                <div class="info-item">
+                  <span>${label}</span>
+                  <strong>${value}</strong>
+                </div>
+              `).join("")}
+            </div>
+          </div>
+        </section>
+      `;
+    }
+
+    function renderCardsSection(section, module) {
+      const gridClass = module.id === "personnel" ? "people-grid" : module.id === "attachment" ? "attachment-grid" : module.id === "achievement" ? "achievement-grid" : "equipment-grid";
+      const cards = getFilteredCards(section.cards);
+      const showSectionHead = module.id !== "personnel" && module.id !== "equipment" && module.id !== "achievement";
+      return `
+        <section class="section-card">
+          ${showSectionHead ? `
+          <div class="section-head">
+            <div>
+              <h3>${section.title}</h3>
+              <p>${section.desc}</p>
+            </div>
+            <span class="badge primary">目录卡片</span>
+          </div>
+          ` : ""}
+          <div class="section-body">
+            ${cards.length ? `
+              <div class="${gridClass}">
+                ${cards.map((card, index) => `
+                  <article class="entity-card ${module.id === "personnel" && card.subtype === "注册建造师" ? "full-span" : ""}">
+                    <div class="entity-top">
+                      <h4>${card.name}</h4>
+                      ${card.subtype ? `<span class="badge primary">${card.subtype}</span>` : ""}
+                    </div>
+                    <div class="entity-meta">
+                      ${(card.badges || []).map((badge) => `<span class="badge ${badge.type}">${badge.text}</span>`).join("")}
+                    </div>
+                    <p>${card.meta.join("<br>")}</p>
+                  </article>
+                `).join("")}
+              </div>
+            ` : `
+              <div class="info-item">
+                <span>当前类型下暂无示例卡片</span>
+                <strong>已切换到“${state.activeSubtype}”视角，当前示例数据未配置对应目录卡片。</strong>
+              </div>
+            `}
+          </div>
+        </section>
+      `;
+    }
+
+    function renderCardsSection(section, module) {
+      const gridClass = module.id === "personnel" ? "people-grid" : module.id === "attachment" ? "attachment-grid" : module.id === "achievement" ? "achievement-grid" : "equipment-grid";
+      const cards = getFilteredCards(section.cards);
+      const showSectionHead = module.id !== "personnel" && module.id !== "equipment" && module.id !== "achievement";
+      let builderIndex = 0;
+      let techLeaderIndex = 0;
+      let titlePersonIndex = 0;
+      let techWorkerIndex = 0;
+      let equipmentIndex = 0;
+      let achievementIndex = 0;
+      const enableCatalogConclusion = shouldEnableCatalogConclusion(module);
+      const selectedKeys = getSelectedCatalogCardKeys(module);
+      const allSelected = cards.length && selectedKeys.length === cards.length;
+      return `
+        <section class="section-card">
+          ${showSectionHead ? `
+          <div class="section-head">
+            <div>
+              <h3>${section.title}</h3>
+              <p>${section.desc}</p>
+            </div>
+            <span class="badge primary">目录卡片</span>
+          </div>
+          ` : ""}
+          <div class="section-body">
+            ${enableCatalogConclusion ? `
+              <div class="catalog-selection-bar">
+                <div class="catalog-selection-main">
+                  <input class="catalog-check" type="checkbox" data-batch-check="all" ${allSelected ? "checked" : ""}>
+                  <span>已选 ${selectedKeys.length} 条</span>
+                </div>
+              </div>
+            ` : ""}
+            ${cards.length ? `
+              <div class="${gridClass}">
+                ${cards.map((card, index) => {
+                  const isBuilderCard = module.id === "personnel" && card.subtype === "\u76d1\u7406\u5e08";
+                  const isTechLeaderCard = module.id === "personnel" && card.subtype === "\u6ce8\u518c\u4eba\u5458";
+                  const isTitlePersonCard = false;
+                  const isTechWorkerCard = module.id === "personnel" && card.subtype === "\u6280\u672f\u8d1f\u8d23\u4eba";
+                  const isEquipmentCard = module.id === "equipment";
+                  const isAchievementCard = module.id === "achievement";
+                  const isPersonnelCard = isBuilderCard || isTechLeaderCard || isTitlePersonCard || isTechWorkerCard;
+                  const isWidePersonnelCard = isBuilderCard || isTechLeaderCard || isTitlePersonCard || isTechWorkerCard;
+                  const isWideCatalogCard = isWidePersonnelCard || isEquipmentCard || isAchievementCard;
+                  const currentIndex = isBuilderCard ? ++builderIndex : "";
+                  const currentTechLeaderIndex = isTechLeaderCard ? ++techLeaderIndex : "";
+                  const currentTitlePersonIndex = isTitlePersonCard ? ++titlePersonIndex : "";
+                  const currentTechWorkerIndex = isTechWorkerCard ? ++techWorkerIndex : "";
+                  const currentEquipmentIndex = isEquipmentCard ? ++equipmentIndex : "";
+                  const currentAchievementIndex = isAchievementCard ? ++achievementIndex : "";
+                  const displayName = card.name;
+                  const builderIdNumber = isBuilderCard && card.meta.length ? card.meta[0].replace(/^身份证号：/, "").trim() : "";
+                  const techLeaderIdNumber = isTechLeaderCard && card.meta.length ? card.meta[0].replace(/^身份证号：/, "").trim() : "";
+                  const titlePersonIdNumber = isTitlePersonCard && card.meta.length ? card.meta[0].replace(/^身份证号：/, "").trim() : "";
+                  const techWorkerIdNumber = isTechWorkerCard && card.meta.length ? card.meta[0].replace(/^身份证号：/, "").trim() : "";
+                  const builderCertificateMeta = isBuilderCard ? (card.meta.find((item) => item.startsWith("\u76d1\u7406\u8bc1\u4e66\u7f16\u53f7\uff1a")) || "") : "";
+                  const builderCertificateNumber = builderCertificateMeta ? builderCertificateMeta.replace(/^\u76d1\u7406\u8bc1\u4e66\u7f16\u53f7\uff1a/, "").trim() : "";
+                  const builderMajorMeta = isBuilderCard ? (card.meta.find((item) => item.startsWith("\u6ce8\u518c\u4e13\u4e1a\uff1a")) || "") : "";
+                  const builderMajor = builderMajorMeta ? builderMajorMeta.replace(/^\u6ce8\u518c\u4e13\u4e1a\uff1a/, "").trim() : "";
+                  const registeredCertificateMeta = isTechLeaderCard ? (card.meta.find((item) => item.startsWith("\u6ce8\u518c\u8bc1\u4e66\u7f16\u53f7\uff1a")) || "") : "";
+                  const registeredCertificateNumber = registeredCertificateMeta ? registeredCertificateMeta.replace(/^\u6ce8\u518c\u8bc1\u4e66\u7f16\u53f7\uff1a/, "").trim() : "";
+                  const registeredMajorMeta = isTechLeaderCard ? (card.meta.find((item) => item.startsWith("\u6ce8\u518c\u4e13\u4e1a\uff1a")) || "") : "";
+                  const registeredMajor = registeredMajorMeta ? registeredMajorMeta.replace(/^\u6ce8\u518c\u4e13\u4e1a\uff1a/, "").trim() : "";
+                  const displayTitle = isBuilderCard && builderIdNumber
+                    ? `${displayName} ${builderIdNumber}`
+                    : isTechLeaderCard && techLeaderIdNumber
+                      ? `${displayName} ${techLeaderIdNumber}`
+                      : isTitlePersonCard && titlePersonIdNumber
+                        ? `${displayName} ${titlePersonIdNumber}`
+                        : isTechWorkerCard && techWorkerIdNumber
+                          ? `${displayName} ${techWorkerIdNumber}`
+                          : displayName;
+                  const socialInsuranceMeta = isPersonnelCard
+                    ? (card.meta.find((item) => item.startsWith("\u793e\u4fdd\u7f34\u7eb3\u60c5\u51b5\uff1a")) || "")
+                    : "";
+                  const socialInsuranceText = socialInsuranceMeta
+                    ? "社保2026-03正常"
+                    : "";
+                  const equipmentOwnershipMeta = isEquipmentCard
+                    ? (card.meta.find((item) => item.startsWith("产权归属：")) || "")
+                    : "";
+                  const equipmentProjectMeta = isEquipmentCard
+                    ? (card.meta.find((item) => item.startsWith("使用项目：")) || "")
+                    : "";
+                  const equipmentMetaLine = isEquipmentCard
+                    ? [equipmentOwnershipMeta, equipmentProjectMeta].filter(Boolean).join("　　")
+                    : "";
+                  const achievementAmountMeta = isAchievementCard
+                    ? (card.meta.find((item) => item.startsWith("合同额：")) || "")
+                    : "";
+                  const achievementStageMeta = isAchievementCard
+                    ? (card.meta.find((item) => item.startsWith("项目阶段：")) || "")
+                    : "";
+                  const achievementExtraMeta = isAchievementCard
+                    ? (card.meta.find((item) =>
+                        item.startsWith("竣工时间：") ||
+                        item.startsWith("结算资料：") ||
+                        item.startsWith("验收资料：")
+                      ) || "")
+                    : "";
+                  const achievementMetaLine = isAchievementCard
+                    ? [achievementAmountMeta, achievementStageMeta, achievementExtraMeta].filter(Boolean).join("　　")
+                    : "";
+                  const builderMetaLine = isBuilderCard
+                    ? [
+                        builderMajor ? `注册专业：${builderMajor}` : "",
+                        builderCertificateNumber ? `监理证书编号：${builderCertificateNumber}` : ""
+                      ].filter(Boolean).join("　　")
+                    : "";
+                  const registeredMetaLine = isTechLeaderCard
+                    ? [
+                        registeredMajor ? `注册专业：${registeredMajor}` : "",
+                        registeredCertificateNumber ? `注册证书编号：${registeredCertificateNumber}` : ""
+                      ].filter(Boolean).join("　　")
+                    : "";
+                  const displayMeta = isBuilderCard
+                    ? [
+                        builderMetaLine,
+                        ...card.meta.slice(1).filter((item) =>
+                          !item.startsWith("\u6ce8\u518c\u4e13\u4e1a\uff1a") &&
+                          !item.startsWith("\u76d1\u7406\u8bc1\u4e66\u7f16\u53f7\uff1a") &&
+                          !item.startsWith("\u6ce8\u518c\u72b6\u6001\uff1a") &&
+                          !item.startsWith("\u6267\u4e1a\u72b6\u6001\uff1a") &&
+                          !item.startsWith("\u793e\u4fdd\u7f34\u7eb3\u60c5\u51b5\uff1a")
+                        )
+                      ].filter(Boolean)
+                    : isTechLeaderCard
+                      ? [
+                          registeredMetaLine,
+                          ...card.meta.slice(1).filter((item) =>
+                            !item.startsWith("\u6ce8\u518c\u4e13\u4e1a\uff1a") &&
+                            !item.startsWith("\u6ce8\u518c\u8bc1\u4e66\u7f16\u53f7\uff1a") &&
+                            !item.startsWith("\u6ce8\u518c\u72b6\u6001\uff1a") &&
+                            !item.startsWith("\u6267\u4e1a\u72b6\u6001\uff1a") &&
+                            !item.startsWith("\u793e\u4fdd\u7f34\u7eb3\u60c5\u51b5\uff1a")
+                          )
+                        ].filter(Boolean)
+                      : isTitlePersonCard
+                      ? card.meta.slice(1).filter((item) => !item.startsWith("\u793e\u4fdd\u7f34\u7eb3\u60c5\u51b5\uff1a"))
+                    : isTechWorkerCard
+                      ? card.meta.slice(1).filter((item) =>
+                          !item.startsWith("\u4efb\u804c\u72b6\u6001\uff1a") &&
+                          !item.startsWith("\u6267\u4e1a\u72b6\u6001\uff1a") &&
+                          !item.startsWith("\u793e\u4fdd\u7f34\u7eb3\u60c5\u51b5\uff1a")
+                        )
+                    : isEquipmentCard
+                      ? [
+                          equipmentMetaLine,
+                          ...card.meta.filter((item) =>
+                            !item.startsWith("产权归属：") &&
+                            !item.startsWith("使用项目：") &&
+                            !item.startsWith("最近检定：") &&
+                            !item.startsWith("最近校准：")
+                          )
+                        ].filter(Boolean)
+                    : isAchievementCard
+                      ? [
+                          achievementMetaLine,
+                          ...card.meta.filter((item) =>
+                            !item.startsWith("合同额：") &&
+                            !item.startsWith("项目阶段：") &&
+                            !item.startsWith("竣工时间：") &&
+                            !item.startsWith("结算资料：") &&
+                            !item.startsWith("验收资料：")
+                          )
+                        ].filter(Boolean)
+                    : card.meta;
+                  const metaBadges = isBuilderCard
+                    ? []
+                    : isTechLeaderCard || isTitlePersonCard || isTechWorkerCard
+                      ? []
+                    : isEquipmentCard
+                      ? []
+                      : isAchievementCard
+                        ? []
+                        : module.id === "attachment"
+                          ? (card.badges || []).slice(1)
+                          : (card.badges || []);
+                  const displayIndex = isBuilderCard
+                    ? currentIndex
+                    : isTechLeaderCard
+                      ? currentTechLeaderIndex
+                      : isTitlePersonCard
+                        ? currentTitlePersonIndex
+                        : isTechWorkerCard
+                          ? currentTechWorkerIndex
+                          : isEquipmentCard
+                            ? currentEquipmentIndex
+                            : isAchievementCard
+                            ? currentAchievementIndex
+                            : "";
+                  const cardKey = getCardKey(module, card);
+                  const selectedClass = cardKey === state.selectedCardKey ? " selected" : "";
+                  const selectableClass = " selectable";
+                  const isChecked = !!state.cardSelection[cardKey];
+                  const attachmentActions = getCardAttachmentActions(module, card);
+                  const attachmentCardClass = module.id === "attachment" && ["营业执照", "法定代表人身份证", "监理资质证书"].includes(card.subtype) ? " attachment-card" : "";
+                  const currentConclusion = getCardConclusionState(module, card);
+                  const displayTopBadge = getResultBadgeFromConclusion(currentConclusion);
+                  return `
+                  <article class="entity-card${selectableClass}${selectedClass}${attachmentCardClass} ${isWideCatalogCard ? "full-span" : ""}" ${cardKey ? `data-card-key="${cardKey}"` : ""}>
+                    <div class="entity-main">
+                      <div class="entity-top ${isPersonnelCard ? "builder-top" : ""}">
+                        <h4>${enableCatalogConclusion ? `<input class="catalog-check" type="checkbox" data-card-check="${cardKey}" ${isChecked ? "checked" : ""}>` : ""}${displayIndex ? `<span class="entity-index">${displayIndex}</span>` : ""}${displayTitle}</h4>
+                        <div class="entity-head-actions">
+                          ${attachmentActions.length || socialInsuranceText ? `
+                            <div class="entity-actions">
+                              ${attachmentActions.length ? `
+                                <div class="entity-attachment-card">
+                                  <button class="entity-attachment-thumb" type="button" data-action-type="preview">${attachmentActions[0].thumbText}</button>
+                                  <div class="entity-attachment-body">
+                                    <div class="entity-attachment-title">${attachmentActions[0].label}</div>
+                                    <div class="entity-attachment-tools">
+                                      ${attachmentActions.map((action) => `<button class="entity-action-btn" type="button" data-action-type="${action.type}">${action.text}</button>`).join("")}
+                                    </div>
+                                  </div>
+                                </div>
+                              ` : ""}
+                              ${socialInsuranceText ? `<span class="badge primary">${socialInsuranceText}</span>` : ""}
+                            </div>
+                          ` : ""}
+                        </div>
+                        ${displayTopBadge ? `<span class="badge ${displayTopBadge.type} entity-result-badge">${displayTopBadge.text}</span>` : ""}
+                      </div>
+                      <div class="entity-meta">
+                        ${metaBadges.map((badge) => `<span class="badge ${badge.type}">${badge.text}</span>`).join("")}
+                      </div>
+                      <p>${displayMeta.join("<br>")}</p>
+                    </div>
+                  </article>
+                `}).join("")}
+              </div>
+            ` : `
+              <div class="info-item">
+                <span>当前类型下暂无示例卡片</span>
+                <strong>已切换到“${state.activeSubtype}”视角，当前示例数据未配置对应目录卡片。</strong>
+              </div>
+            `}
+          </div>
+        </section>
+      `;
+    }
+
+    function renderSections(module) {
+      const sections = getFilteredSections(module);
+      if (!sections.length) {
+        return `
+          <section class="section-card">
+            <div class="section-body">
+              <div class="info-item">
+                <span>未匹配到内容</span>
+                <strong>当前关键词没有命中展示说明，可以清空搜索后继续查看。</strong>
+              </div>
+            </div>
+          </section>
+        `;
+      }
+
+      return sections.map((section) => {
+        if (section.type === "grid") return renderGridSection(section);
+        if (section.type === "cards") return renderCardsSection(section, module);
+        return renderTimelineSection(section);
+      }).join("");
+    }
+
+    function renderContent() {
+      const module = getModule();
+      ensureSelectedCard(module);
+      const primaryCardsSection = module.sections?.find((section) => section.type === "cards");
+      const hideHead = false;
+      const title = (module.id === "personnel" || module.id === "equipment" || module.id === "achievement") && primaryCardsSection ? primaryCardsSection.title : module.name;
+      let desc = module.id === "personnel" || module.id === "equipment" || module.id === "achievement"
+        ? (primaryCardsSection?.desc || "")
+        : module.desc;
+      if (module.id === "personnel" && state.activeSubtype === "监理师") {
+        desc = "覆盖监理人员基本信息、监理证书信息、执业状态和社保归属四类核查内容。";
+      }
+      elements.contentTitle.textContent = title;
+      elements.contentDesc.textContent = desc;
+      elements.contentDesc.hidden = !desc;
+      elements.contentHead.className = hideHead ? "panel-head hidden" : desc ? "panel-head" : "panel-head compact";
+      renderSubtypeFilters(module);
+      renderMajorFilter();
+      elements.contentBody.innerHTML = `${renderOverview(module)}${renderSections(module)}`;
+    }
+
+    function renderDetail() {
+      const module = getModule();
+      renderDetailHeadText(module);
+      elements.detailBody.innerHTML = `
+        ${renderConclusionSection(module)}
+      `;
+    }
+
+    function render() {
+      renderHeroSummary();
+      renderQualificationBoard();
+      renderModuleListV2();
+      renderContent();
+      renderDetail();
+      elements.contentBody.scrollTop = 0;
+      elements.detailBody.scrollTop = 0;
+      elements.moduleList.scrollTop = 0;
+    }
+
+    elements.moduleList.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-module-id]");
+      if (!button) return;
+      const nextModule = modules.find((module) => module.id === button.dataset.moduleId);
+      if (!nextModule) return;
+      state.activeModuleId = button.dataset.moduleId;
+      state.activeSubtype = button.dataset.moduleSubtype || getDefaultSubtype(nextModule);
+      state.search = "";
+      state.selectedMajors = [];
+      state.majorKeyword = "";
+      state.majorDropdownOpen = false;
+      elements.searchInput.value = "";
+      render();
+    });
+
+    elements.subTypeFilters.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-subtype]");
+      if (!button) return;
+      state.activeSubtype = button.dataset.subtype;
+      state.selectedMajors = [];
+      state.majorKeyword = "";
+      state.majorDropdownOpen = false;
+      renderContent();
+      renderDetail();
+    });
+
+    elements.majorFilterToggle.addEventListener("click", () => {
+      if (!isBuilderModuleView()) return;
+      state.majorDropdownOpen = !state.majorDropdownOpen;
+      renderMajorFilter();
+    });
+
+    elements.majorFilterValue.addEventListener("click", (event) => {
+      const removeButton = event.target.closest("[data-remove-major]");
+      if (!removeButton) return;
+      event.stopPropagation();
+      const major = removeButton.dataset.removeMajor;
+      state.selectedMajors = state.selectedMajors.filter((item) => item !== major);
+      renderContent();
+      renderDetail();
+    });
+
+    elements.majorFilterInput.addEventListener("input", (event) => {
+      state.majorKeyword = event.target.value;
+      renderMajorFilter();
+    });
+
+    elements.majorFilterOptions.addEventListener("click", (event) => {
+      const button = event.target.closest("[data-major-option]");
+      if (!button) return;
+      const major = button.dataset.majorOption;
+      if (state.selectedMajors.includes(major)) {
+        state.selectedMajors = state.selectedMajors.filter((item) => item !== major);
+      } else {
+        state.selectedMajors = [...state.selectedMajors, major];
+      }
+      renderContent();
+      renderDetail();
+    });
+
+    document.addEventListener("click", (event) => {
+      if (elements.majorFilterWrap.hidden) return;
+      if (elements.majorFilterWrap.contains(event.target)) return;
+      if (!state.majorDropdownOpen) return;
+      state.majorDropdownOpen = false;
+      renderMajorFilter();
+    });
+
+    elements.contentBody.addEventListener("click", (event) => {
+      const actionButton = event.target.closest("[data-action-type]");
+      if (actionButton) {
+        event.stopPropagation();
+        const cardNode = actionButton.closest("[data-card-key]");
+        const module = getModule();
+        if (!cardNode || !module) return;
+        const cardsSection = module.sections?.find((section) => section.type === "cards");
+        const card = (cardsSection?.cards || []).find((item) => getCardKey(module, item) === cardNode.dataset.cardKey);
+        if (!card) return;
+        openPreviewModal(module, card, actionButton.dataset.actionType);
+        return;
+      }
+
+      const card = event.target.closest("[data-card-key]");
+      if (!card) return;
+      state.selectedCardKey = card.dataset.cardKey;
+      renderContent();
+      renderDetail();
+    });
+
+    elements.contentBody.addEventListener("change", (event) => {
+      const batchCheck = event.target.closest("[data-batch-check]");
+      if (batchCheck) {
+        const module = getModule();
+        const cards = getEligibleCards(module);
+        cards.forEach((card) => {
+          const cardKey = getCardKey(module, card);
+          state.cardSelection[cardKey] = batchCheck.checked;
+        });
+        renderContent();
+        return;
+      }
+
+      const cardCheck = event.target.closest("[data-card-check]");
+      if (cardCheck) {
+        state.cardSelection[cardCheck.dataset.cardCheck] = cardCheck.checked;
+        renderContent();
+      }
+    });
+
+    elements.detailBody.addEventListener("change", (event) => {
+      const radio = event.target.closest('input[type="radio"][name^="conclusion-"]');
+      if (!radio) return;
+      const module = getModule();
+      const selectedCard = getSelectedCard(module);
+      if (!selectedCard) return;
+      setCardConclusion(getCardKey(module, selectedCard), radio.value);
+      renderContent();
+      renderDetail();
+    });
+
+    elements.previewClose.addEventListener("click", closePreviewModal);
+    elements.previewConfirm.addEventListener("click", closePreviewModal);
+    elements.previewPrint.addEventListener("click", () => {
+      if (!state.previewData) return;
+      window.print();
+    });
+
+    elements.previewModal.addEventListener("click", (event) => {
+      if (event.target === elements.previewModal) {
+        closePreviewModal();
+      }
+    });
+
+    elements.searchInput.addEventListener("input", (event) => {
+      state.search = event.target.value;
+      renderContent();
+    });
+
+    elements.searchButton.addEventListener("click", () => {
+      renderContent();
+      elements.contentBody.scrollTop = 0;
+    });
+
+    function submitAndReturn() {
+      if (window.opener && !window.opener.closed) {
+        window.close();
+        return;
+      }
+      window.location.href = "交任务核查列表.html";
+    }
+
+    render();
+  </script>
+</body>
+</html>
