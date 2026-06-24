@@ -938,6 +938,141 @@
       grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
+    .builder-table {
+      display: grid;
+      gap: 10px;
+    }
+
+    .builder-table-head,
+    .builder-table-row {
+      display: grid;
+      grid-template-columns: 1.35fr 0.85fr 1fr 1fr 1fr 0.9fr;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .builder-table-head {
+      padding: 0 14px;
+    }
+
+    .builder-table-head-cell {
+      min-width: 0;
+      display: flex;
+      align-items: center;
+    }
+
+    .builder-table-head-cell.name {
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .builder-table-head-cell.center {
+      justify-content: center;
+    }
+
+    .builder-table-head-selection {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+      flex: 0 0 auto;
+    }
+
+    .builder-table-head-selection-text {
+      color: var(--text);
+      font-size: 0.78rem;
+      font-weight: 600;
+      line-height: 1.4;
+      white-space: nowrap;
+    }
+
+    .builder-table-head-title {
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-weight: 700;
+      line-height: 1.4;
+      white-space: nowrap;
+      flex: 0 0 auto;
+    }
+
+    .builder-table-head-indent {
+      width: 56px;
+      flex: 0 0 56px;
+    }
+
+    .builder-table-head span {
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-weight: 700;
+      line-height: 1.4;
+    }
+
+    .builder-table-row {
+      padding: 14px;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.78);
+      border: 1px solid rgba(91, 67, 43, 0.08);
+      transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
+      cursor: pointer;
+    }
+
+    .builder-table-row:hover {
+      transform: translateY(-1px);
+    }
+
+    .builder-table-row.selected {
+      border-color: rgba(140, 79, 40, 0.34);
+      box-shadow:
+        inset 0 0 0 1px rgba(140, 79, 40, 0.14),
+        0 12px 24px rgba(140, 79, 40, 0.12);
+      background: linear-gradient(135deg, rgba(248, 235, 221, 0.98), rgba(255, 251, 246, 0.92));
+    }
+
+    .builder-table-cell {
+      min-width: 0;
+      display: grid;
+      gap: 6px;
+      align-content: center;
+    }
+
+    .builder-table-cell.attachment {
+      justify-items: center;
+    }
+
+    .builder-table-cell strong,
+    .builder-table-cell span,
+    .builder-table-cell .builder-meta {
+      word-break: break-word;
+    }
+
+    .builder-name-main {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+      flex-wrap: wrap;
+    }
+
+    .builder-name-main strong {
+      font-size: 0.86rem;
+      line-height: 1.45;
+      color: var(--text);
+    }
+
+    .builder-meta {
+      color: var(--muted);
+      font-size: 0.74rem;
+      line-height: 1.45;
+    }
+
+    .builder-badge-group {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: flex-start;
+    }
+
     .people-grid > .entity-card {
       grid-column: auto;
     }
@@ -1040,6 +1175,10 @@
       display: grid;
       gap: 4px;
       min-width: 0;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: rgba(140, 79, 40, 0.05);
+      border: 1px solid rgba(140, 79, 40, 0.08);
     }
 
     .entity-inline-field {
@@ -1708,6 +1847,124 @@
         grid-template-columns: 1fr;
         align-items: start;
       }
+
+      .builder-table-head {
+        display: none;
+      }
+
+      .builder-table-row {
+        grid-template-columns: 1fr;
+      }
+
+    }
+    body.modal-compact .app-shell {
+      padding: 10px;
+      gap: 10px;
+    }
+
+    body.modal-compact .top-sticky-shell {
+      gap: 10px;
+    }
+
+    body.modal-compact .hero-main,
+    body.modal-compact .hero-side {
+      padding: 14px 16px;
+    }
+
+    body.modal-compact .hero-main {
+      gap: 10px;
+      padding-right: 420px;
+    }
+
+    body.modal-compact .hero-main h1 {
+      font-size: clamp(1.45rem, 2.4vw, 2.1rem);
+    }
+
+    body.modal-compact .hero-main p {
+      max-width: 680px;
+      font-size: 0.82rem;
+      line-height: 1.6;
+    }
+
+    body.modal-compact .hero-top-right {
+      top: 12px;
+      right: 12px;
+      gap: 8px;
+      max-width: calc(100% - 24px);
+    }
+
+    body.modal-compact .hero-case-card {
+      width: 220px;
+      padding: 8px 10px;
+      border-radius: 12px;
+    }
+
+    body.modal-compact .hero-summary-item,
+    body.modal-compact .hero-summary-item.combined {
+      padding: 8px 10px;
+      border-radius: 12px;
+    }
+
+    body.modal-compact .qualification-board {
+      padding: 10px 12px;
+      gap: 8px;
+    }
+
+    body.modal-compact .workspace {
+      gap: 12px;
+    }
+
+    body.modal-compact .nav-head {
+      padding: 14px 16px 10px;
+    }
+
+    body.modal-compact .nav-body,
+    body.modal-compact .content-panel,
+    body.modal-compact .detail-panel {
+      padding-left: 0;
+      padding-right: 0;
+    }
+
+    body.modal-compact .toolbar,
+    body.modal-compact .detail-summary {
+      padding: 10px 16px;
+    }
+
+    body.modal-compact .panel-head {
+      padding: 12px 16px 8px;
+    }
+
+    body.modal-compact .panel-body,
+    body.modal-compact .detail-body {
+      padding: 12px 16px 16px;
+      gap: 10px;
+    }
+
+    body.modal-compact .nav-group-button,
+    body.modal-compact .nav-button {
+      padding: 10px 12px;
+    }
+
+    body.modal-compact .detail-card,
+    body.modal-compact .section-card,
+    body.modal-compact .builder-card,
+    body.modal-compact .info-card,
+    body.modal-compact .result-card {
+      padding: 12px;
+      border-radius: 14px;
+    }
+
+    body.modal-compact textarea {
+      min-height: 72px;
+    }
+
+    body.modal-compact .preview-modal {
+      padding: 16px;
+    }
+
+    body.modal-compact .preview-dialog {
+      width: min(820px, calc(100vw - 32px));
+      max-height: calc(100vh - 32px);
     }
   </style>
 </head>
@@ -1794,6 +2051,10 @@
   </div>
 
   <script>
+    if (window.parent && window.parent !== window) {
+      document.body.classList.add("modal-compact");
+    }
+
     const enterpriseProfile = {
       name: "北京城建示范工程有限公司",
       code: "91110108MA0ABCDX8U",
@@ -1847,7 +2108,7 @@
               {
                 subtype: "注册建造师",
                 name: "张建国 / 注册建造师",
-                meta: ["身份证号：110101198604153218", "注册专业：建筑工程", "注册证书编号：京111201920230001", "社保缴纳情况：正常"],
+                meta: ["身份证号：110101198604153218", "注册专业：建筑工程", "注册号：京111201920230001", "注册证书附件：一级建造师注册证书.pdf", "最新一个月养老缴纳情况：202604是"],
                 badges: [
                   { text: "核查通过", type: "ok" },
                   { text: "证书附件完整", type: "primary" }
@@ -1856,7 +2117,7 @@
               {
                 subtype: "注册建造师",
                 name: "李文涛 / 注册建造师",
-                meta: ["身份证号：110101198512064231", "注册专业：建筑工程", "注册证书编号：京111201820230002", "社保缴纳情况：正常"],
+                meta: ["身份证号：110101198512064231", "注册专业：建筑工程", "注册号：京111201820230002", "注册证书附件：注册证书扫描件-李文涛.pdf", "最新一个月养老缴纳情况：202605否"],
                 badges: [
                   { text: "核查通过", type: "ok" },
                   { text: "证书附件完整", type: "primary" }
@@ -1865,7 +2126,7 @@
               {
                 subtype: "注册建造师",
                 name: "陈志远 / 注册建造师",
-                meta: ["身份证号：110101198307215467", "注册专业：市政公用工程", "注册证书编号：京111201720230003", "社保缴纳情况：正常"],
+                meta: ["身份证号：110101198307215467", "注册专业：市政公用工程", "注册号：京111201720230003", "注册证书附件：市政专业注册证书.pdf", "最新一个月养老缴纳情况：202606是"],
                 badges: [
                   { text: "核查通过", type: "ok" },
                 ]
@@ -1873,7 +2134,7 @@
               {
                 subtype: "注册建造师",
                 name: "赵海峰 / 注册建造师",
-                meta: ["身份证号：110101198909184252", "注册专业：机电工程", "注册证书编号：京111202020230004", "社保缴纳情况：正常"],
+                meta: ["身份证号：110101198909184252", "注册专业：机电工程", "注册号：京111202020230004", "注册证书附件：机电注册证书-赵海峰.pdf", "最新一个月养老缴纳情况：202604是"],
                 badges: [
                   { text: "证书可预览", type: "ok" }
                 ]
@@ -1881,7 +2142,7 @@
               {
                 subtype: "注册建造师",
                 name: "周建平 / 注册建造师",
-                meta: ["身份证号：110101198111032814", "注册专业：建筑工程", "注册证书编号：京111201620230005", "社保缴纳情况：正常"],
+                meta: ["身份证号：110101198111032814", "注册专业：建筑工程", "注册号：京111201620230005", "注册证书附件：周建平注册证书.pdf", "最新一个月养老缴纳情况：202604是"],
                 badges: [
                   { text: "核查通过", type: "ok" },
                   { text: "职称匹配", type: "primary" }
@@ -1890,7 +2151,7 @@
               {
                 subtype: "注册建造师",
                 name: "吴晓明 / 注册建造师",
-                meta: ["身份证号：110101198706263518", "注册专业：建筑工程", "注册证书编号：京111201920230006", "社保缴纳情况：正常"],
+                meta: ["身份证号：110101198706263518", "注册专业：建筑工程", "注册号：京111201920230006", "注册证书附件：吴晓明注册证书.pdf", "最新一个月养老缴纳情况：202604是"],
                 badges: [
                   { text: "待补执业印章页", type: "warn" },
                   { text: "需人工复核", type: "risk" }
@@ -1899,7 +2160,7 @@
               {
                 subtype: "注册建造师",
                 name: "孙立强 / 注册建造师",
-                meta: ["身份证号：110101198402117691", "注册专业：市政公用工程", "注册证书编号：京111201820230007", "社保缴纳情况：正常"],
+                meta: ["身份证号：110101198402117691", "注册专业：市政公用工程", "注册号：京111201820230007", "注册证书附件：孙立强注册证书.pdf", "最新一个月养老缴纳情况：202604是"],
                 badges: [
                   { text: "核查通过", type: "ok" },
                   { text: "证书附件完整", type: "primary" }
@@ -1908,7 +2169,7 @@
               {
                 subtype: "注册建造师",
                 name: "马俊杰 / 注册建造师",
-                meta: ["身份证号：110101199001153224", "注册专业：机电工程", "注册证书编号：京111202120230008", "社保缴纳情况：正常"],
+                meta: ["身份证号：110101199001153224", "注册专业：机电工程", "注册号：京111202120230008", "注册证书附件：马俊杰注册证书.pdf", "最新一个月养老缴纳情况：202604是"],
                 badges: [
                   { text: "证书可预览", type: "ok" },
                   { text: "待补继续教育证明", type: "warn" }
@@ -1917,7 +2178,7 @@
               {
                 subtype: "注册建造师",
                 name: "高鹏飞 / 注册建造师",
-                meta: ["身份证号：110101198608224519", "注册专业：建筑工程", "注册证书编号：京111201920230009", "社保缴纳情况：正常"],
+                meta: ["身份证号：110101198608224519", "注册专业：建筑工程", "注册号：京111201920230009", "注册证书附件：高鹏飞注册证书.pdf", "最新一个月养老缴纳情况：202604是"],
                 badges: [
                   { text: "核查通过", type: "ok" },
                 ]
@@ -1925,7 +2186,7 @@
               {
                 subtype: "注册建造师",
                 name: "梁志诚 / 注册建造师",
-                meta: ["身份证号：110101198812093675", "注册专业：建筑工程", "注册证书编号：京111202020230010", "社保缴纳情况：正常"],
+                meta: ["身份证号：110101198812093675", "注册专业：建筑工程", "注册号：京111202020230010", "注册证书附件：梁志诚注册证书.pdf", "最新一个月养老缴纳情况：202606否"],
                 badges: [
                   { text: "证书附件完整", type: "primary" },
                   { text: "待复核履历", type: "warn" }
@@ -1934,7 +2195,7 @@
               {
                 subtype: "注册建造师",
                 name: "韩旭东 / 注册建造师",
-                meta: ["身份证号：110101198505287134", "注册专业：市政公用工程", "注册证书编号：京111201720230011", "社保缴纳情况：正常"],
+                meta: ["身份证号：110101198505287134", "注册专业：市政公用工程", "注册号：京111201720230011", "注册证书附件：韩旭东注册证书.pdf", "最新一个月养老缴纳情况：202604是"],
                 badges: [
                   { text: "核查通过", type: "ok" },
                   { text: "注册信息一致", type: "primary" }
@@ -2435,13 +2696,14 @@
     }
 
     function getCardAttachmentActions(module, card) {
+      const isBuilderCard = module.id === "personnel" && card.subtype === "注册建造师";
       const isTechLeaderCard = module.id === "personnel" && card.subtype === "技术负责人";
       const isTitlePersonCard = module.id === "personnel" && card.subtype === "职称人员";
       const isTechWorkerCard = module.id === "personnel" && card.subtype === "技术工人";
       const isEquipmentCard = module.id === "equipment";
       const isAttachmentCard = module.id === "attachment" && ["营业执照", "财审报告", "法人身份证复印件"].includes(card.subtype);
 
-      if (!(isTechLeaderCard || isTitlePersonCard || isTechWorkerCard || isEquipmentCard || isAttachmentCard)) {
+      if (!(isBuilderCard || isTechLeaderCard || isTitlePersonCard || isTechWorkerCard || isEquipmentCard || isAttachmentCard)) {
         return [];
       }
 
@@ -2449,6 +2711,8 @@
         ? card.name
         : isEquipmentCard
         ? "设备附件"
+        : isBuilderCard
+          ? "注册证书附件"
         : isTechLeaderCard
           ? "学历/职称附件"
           : isTitlePersonCard
@@ -2456,7 +2720,7 @@
             : "岗位证书附件";
 
       return [
-        { text: "在线预览", type: "preview", label: attachmentLabel, thumbText: "PDF\n附件" },
+        { text: "PDF附件", type: "preview", label: attachmentLabel, thumbText: "PDF\n附件" },
         { text: "打印", type: "print", label: attachmentLabel }
       ];
     }
@@ -2964,9 +3228,12 @@
               <span class="badge warn">支持多附件上传</span>
             </div>
           </div>
-          <button class="search-button" type="button" onclick="submitAndReturn()">提交</button>
-        </section>
-      `;
+            <div class="upload-actions">
+              <button class="entity-action-btn" type="button" onclick="returnToArchiveDoc()">返回案卷文书</button>
+              <button class="search-button" type="button" onclick="submitAndReturn()">提交</button>
+            </div>
+          </section>
+        `;
     }
 
     function renderAttachmentsSection(module) {
@@ -3196,6 +3463,8 @@
       const enableCatalogConclusion = shouldEnableCatalogConclusion(module);
       const selectedKeys = getSelectedCatalogCardKeys(module);
       const allSelected = cards.length && selectedKeys.length === cards.length;
+      const builderCards = cards.filter((card) => module.id === "personnel" && card.subtype === "注册建造师");
+      const otherCards = cards.filter((card) => !(module.id === "personnel" && card.subtype === "注册建造师"));
       return `
         <section class="section-card">
           <div class="section-head">
@@ -3345,6 +3614,8 @@
       const enableCatalogConclusion = shouldEnableCatalogConclusion(module);
       const selectedKeys = getSelectedCatalogCardKeys(module);
       const allSelected = cards.length && selectedKeys.length === cards.length;
+      const builderCards = cards.filter((card) => module.id === "personnel" && card.subtype === "注册建造师");
+      const nonBuilderCards = cards.filter((card) => !(module.id === "personnel" && card.subtype === "注册建造师"));
       return `
         <section class="section-card">
           ${showSectionHead ? `
@@ -3357,7 +3628,7 @@
           </div>
           ` : ""}
           <div class="section-body">
-            ${enableCatalogConclusion ? `
+            ${enableCatalogConclusion && !builderCards.length ? `
               <div class="catalog-selection-bar">
                 <div class="catalog-selection-main">
                   <input class="catalog-check" type="checkbox" data-batch-check="all" ${allSelected ? "checked" : ""}>
@@ -3365,9 +3636,97 @@
                 </div>
               </div>
             ` : ""}
-            ${cards.length ? `
+            ${builderCards.length ? `
+              <div class="builder-table">
+                <div class="builder-table-head">
+                  <div class="builder-table-head-cell name">
+                    ${enableCatalogConclusion ? `
+                      <div class="builder-table-head-selection">
+                        <input class="catalog-check" type="checkbox" data-batch-check="all" ${allSelected ? "checked" : ""}>
+                        <span class="builder-table-head-selection-text">已选 ${selectedKeys.length} 条</span>
+                      </div>
+                    ` : `<span class="builder-table-head-indent" aria-hidden="true"></span>`}
+                    <span class="builder-table-head-title">姓名</span>
+                  </div>
+                  <div class="builder-table-head-cell"><span>注册专业</span></div>
+                  <div class="builder-table-head-cell center"><span>注册号</span></div>
+                  <div class="builder-table-head-cell center"><span>注册证书附件</span></div>
+                  <div class="builder-table-head-cell"><span>养老险缴纳状态</span></div>
+                  <div class="builder-table-head-cell"><span>缴纳月份</span></div>
+                </div>
+                ${builderCards.map((card) => {
+                  const currentIndex = ++builderIndex;
+                  const displayName = card.name.replace(/\s*\/\s*注册建造师\s*$/, "");
+                  const builderIdMeta = (card.meta.find((item) => item.startsWith("身份证号：")) || "");
+                  const builderIdNumber = builderIdMeta ? builderIdMeta.replace(/^身份证号：/, "").trim() : "";
+                  const builderMajorMeta = (card.meta.find((item) => item.startsWith("注册专业：")) || "");
+                  const builderMajor = builderMajorMeta ? builderMajorMeta.replace(/^注册专业：/, "").trim() : "";
+                  const builderCertificateMeta = (card.meta.find((item) => item.startsWith("注册号：")) || "");
+                  const builderCertificateNumber = builderCertificateMeta ? builderCertificateMeta.replace(/^注册号：/, "").trim() : "";
+                  const socialInsuranceMeta = (card.meta.find((item) => item.startsWith("最新一个月养老缴纳情况：")) || "");
+                  const socialInsuranceText = socialInsuranceMeta ? socialInsuranceMeta.replace(/^最新一个月养老缴纳情况：/, "").trim() : "";
+                  const builderSocialStatus = socialInsuranceText
+                    ? /否$/.test(socialInsuranceText)
+                      ? "终止缴费"
+                      : "参保缴费"
+                    : "";
+                  const builderSocialMonth = socialInsuranceText
+                    ? (socialInsuranceText.match(/^(\d{6})/) || [])[1] || ""
+                    : "";
+                  const builderSocialBadgeText = builderSocialStatus || "";
+                  const builderSocialBadgeType = builderSocialStatus === "终止缴费" ? "risk" : "primary";
+                  const cardKey = getCardKey(module, card);
+                  const isChecked = !!state.cardSelection[cardKey];
+                  const attachmentActions = getCardAttachmentActions(module, card).filter((action) => action.type === "preview");
+                  const currentConclusion = getCardConclusionState(module, card);
+                  const displayTopBadge = getResultBadgeFromConclusion(currentConclusion);
+                  const selectedClass = cardKey === state.selectedCardKey ? " selected" : "";
+                  return `
+                    <article class="builder-table-row${selectedClass}" data-card-key="${cardKey}">
+                      <div class="builder-table-cell">
+                        <div class="builder-name-main">
+                          ${enableCatalogConclusion ? `<input class="catalog-check" type="checkbox" data-card-check="${cardKey}" ${isChecked ? "checked" : ""}>` : ""}
+                          <span class="entity-index">${currentIndex}</span>
+                          <strong>${displayName}</strong>
+                        </div>
+                        ${builderIdNumber ? `<div class="builder-meta">${builderIdNumber}</div>` : ""}
+                      </div>
+                      <div class="builder-table-cell">
+                        <strong>${builderMajor || "-"}</strong>
+                      </div>
+                      <div class="builder-table-cell">
+                        <span>${builderCertificateNumber || "-"}</span>
+                      </div>
+                      <div class="builder-table-cell attachment">
+                        <div class="builder-badge-group">
+                          ${attachmentActions.length ? `
+                            <div class="entity-actions">
+                              <div class="entity-attachment-card">
+                                <button class="entity-attachment-thumb" type="button" data-action-type="preview">${attachmentActions[0].thumbText}</button>
+                                <div class="entity-attachment-body">
+                                  <div class="entity-attachment-title">PDF附件</div>
+                                </div>
+                              </div>
+                            </div>
+                          ` : `<span class="builder-meta">暂无附件</span>`}
+                        </div>
+                      </div>
+                      <div class="builder-table-cell">
+                        <div class="builder-badge-group">
+                          ${builderSocialBadgeText ? `<span class="badge ${builderSocialBadgeType}">${builderSocialBadgeText}</span>` : ""}
+                        </div>
+                      </div>
+                      <div class="builder-table-cell">
+                        <span>${builderSocialMonth || "-"}</span>
+                      </div>
+                    </article>
+                  `;
+                }).join("")}
+              </div>
+            ` : ""}
+            ${nonBuilderCards.length ? `
               <div class="${gridClass}">
-                ${cards.map((card, index) => {
+                ${nonBuilderCards.map((card, index) => {
                   const isBuilderCard = module.id === "personnel" && card.subtype === "\u6ce8\u518c\u5efa\u9020\u5e08";
                   const isTechLeaderCard = module.id === "personnel" && card.subtype === "\u6280\u672f\u8d1f\u8d23\u4eba";
                   const isTitlePersonCard = module.id === "personnel" && card.subtype === "\u804c\u79f0\u4eba\u5458";
@@ -3392,16 +3751,17 @@
                         : isTechWorkerCard
                           ? card.name.replace(/\s*\/\s*技术工人\s*$/, "")
                           : card.name;
-                  const builderIdNumber = isBuilderCard && card.meta.length ? card.meta[0].replace(/^身份证号：/, "").trim() : "";
+                  const builderIdMeta = isBuilderCard ? (card.meta.find((item) => item.startsWith("身份证号：")) || "") : "";
+                  const builderIdNumber = builderIdMeta ? builderIdMeta.replace(/^身份证号：/, "").trim() : "";
                   const techLeaderIdNumber = isTechLeaderCard && card.meta.length ? card.meta[0].replace(/^身份证号：/, "").trim() : "";
                   const titlePersonIdNumber = isTitlePersonCard && card.meta.length ? card.meta[0].replace(/^身份证号：/, "").trim() : "";
                   const techWorkerIdNumber = isTechWorkerCard && card.meta.length ? card.meta[0].replace(/^身份证号：/, "").trim() : "";
-                  const builderCertificateMeta = isBuilderCard ? (card.meta.find((item) => item.startsWith("\u6ce8\u518c\u8bc1\u4e66\u7f16\u53f7\uff1a")) || "") : "";
-                  const builderCertificateNumber = builderCertificateMeta ? builderCertificateMeta.replace(/^\u6ce8\u518c\u8bc1\u4e66\u7f16\u53f7\uff1a/, "").trim() : "";
+                  const builderCertificateMeta = isBuilderCard ? (card.meta.find((item) => item.startsWith("注册号：")) || "") : "";
+                  const builderCertificateNumber = builderCertificateMeta ? builderCertificateMeta.replace(/^注册号：/, "").trim() : "";
                   const builderMajorMeta = isBuilderCard ? (card.meta.find((item) => item.startsWith("\u6ce8\u518c\u4e13\u4e1a\uff1a")) || "") : "";
                   const builderMajor = builderMajorMeta ? builderMajorMeta.replace(/^\u6ce8\u518c\u4e13\u4e1a\uff1a/, "").trim() : "";
                   const displayTitle = isBuilderCard && builderIdNumber
-                    ? `${displayName} ${builderIdNumber}`
+                    ? `${displayName} ${builderIdNumber}${builderMajor ? ` <span class="badge primary">注册专业 ${builderMajor}</span>` : ""}`
                     : isTechLeaderCard && techLeaderIdNumber
                       ? `${displayName} ${techLeaderIdNumber}`
                       : isTitlePersonCard && titlePersonIdNumber
@@ -3409,11 +3769,26 @@
                         : isTechWorkerCard && techWorkerIdNumber
                           ? `${displayName} ${techWorkerIdNumber}`
                           : displayName;
-                  const socialInsuranceMeta = isPersonnelCard
+                  const socialInsuranceMeta = isBuilderCard
+                    ? (card.meta.find((item) => item.startsWith("最新一个月养老缴纳情况：")) || "")
+                    : isPersonnelCard
                     ? (card.meta.find((item) => item.startsWith("\u793e\u4fdd\u7f34\u7eb3\u60c5\u51b5\uff1a")) || "")
                     : "";
                   const socialInsuranceText = socialInsuranceMeta
-                    ? "社保2026-03正常"
+                    ? isBuilderCard
+                      ? socialInsuranceMeta.replace(/^最新一个月养老缴纳情况：/, "").trim()
+                      : "社保2026-03正常"
+                    : "";
+                  const builderSocialStatus = isBuilderCard && socialInsuranceText
+                    ? /否$/.test(socialInsuranceText)
+                      ? "终止缴费"
+                      : "参保缴费"
+                    : "";
+                  const builderSocialMonth = isBuilderCard && socialInsuranceText
+                    ? (socialInsuranceText.match(/^(\d{6})/) || [])[1] || ""
+                    : "";
+                  const builderSocialBadgeText = isBuilderCard && socialInsuranceText
+                    ? `养老险缴纳状态：${[builderSocialMonth, builderSocialStatus].filter(Boolean).join(" ")}`
                     : "";
                   const equipmentOwnershipMeta = isEquipmentCard
                     ? (card.meta.find((item) => item.startsWith("产权归属：")) || "")
@@ -3440,20 +3815,9 @@
                   const achievementMetaLine = isAchievementCard
                     ? [achievementAmountMeta, achievementStageMeta, achievementExtraMeta].filter(Boolean).join("　　")
                     : "";
-                  const builderMetaLine = isBuilderCard
-                    ? [
-                        builderMajor ? `注册专业：${builderMajor}` : "",
-                        builderCertificateNumber ? `注册证书编号：${builderCertificateNumber}` : ""
-                      ].filter(Boolean).join("　　")
-                    : "";
                   const displayMeta = isBuilderCard
                     ? [
-                        builderMetaLine,
-                        ...card.meta.slice(1).filter((item) =>
-                          !item.startsWith("\u6ce8\u518c\u4e13\u4e1a\uff1a") &&
-                          !item.startsWith("\u6ce8\u518c\u8bc1\u4e66\u7f16\u53f7\uff1a") &&
-                          !item.startsWith("\u793e\u4fdd\u7f34\u7eb3\u60c5\u51b5\uff1a")
-                        )
+                        builderCertificateNumber ? `注册号：${builderCertificateNumber}` : ""
                       ].filter(Boolean)
                     : isTechLeaderCard
                       ? card.meta.slice(1).filter((item) => !item.startsWith("\u793e\u4fdd\u7f34\u7eb3\u60c5\u51b5\uff1a"))
@@ -3521,6 +3885,7 @@
                       <div class="entity-top ${isPersonnelCard ? "builder-top" : ""}">
                         <h4>${enableCatalogConclusion ? `<input class="catalog-check" type="checkbox" data-card-check="${cardKey}" ${isChecked ? "checked" : ""}>` : ""}${displayIndex ? `<span class="entity-index">${displayIndex}</span>` : ""}${displayTitle}</h4>
                         <div class="entity-head-actions">
+                          ${builderSocialBadgeText ? `<span class="badge primary">${builderSocialBadgeText}</span>` : ""}
                           ${attachmentActions.length ? `
                             <div class="entity-actions">
                               <div class="entity-attachment-card">
@@ -3535,7 +3900,6 @@
                             </div>
                           ` : ""}
                         </div>
-                        ${socialInsuranceText ? `<span class="badge primary entity-social-badge">${socialInsuranceText}</span>` : ""}
                         ${displayTopBadge ? `<span class="badge ${displayTopBadge.type} entity-result-badge">${displayTopBadge.text}</span>` : ""}
                       </div>
                       <div class="entity-meta">
@@ -3546,12 +3910,12 @@
                   </article>
                 `}).join("")}
               </div>
-            ` : `
+            ` : !builderCards.length ? `
               <div class="info-item">
                 <span>当前类型下暂无示例卡片</span>
                 <strong>已切换到“${state.activeSubtype}”视角，当前示例数据未配置对应目录卡片。</strong>
               </div>
-            `}
+            ` : ""}
           </div>
         </section>
       `;
@@ -3589,7 +3953,7 @@
         ? (primaryCardsSection?.desc || "")
         : module.desc;
       if (module.id === "personnel" && state.activeSubtype === "注册建造师") {
-        desc = "覆盖人员基本信息、证书信息、职称证书信息、社保缴纳情况四类核查内容。";
+        desc = "建造师列表信息包括姓名、注册专业、注册号、注册证书附件、最新一个月养老缴纳情况。";
       }
       elements.contentTitle.textContent = title;
       elements.contentDesc.textContent = desc;
@@ -3762,7 +4126,18 @@
       elements.contentBody.scrollTop = 0;
     });
 
+    function returnToArchiveDoc() {
+      const targetPage = "./案卷文书信息-重设计.html";
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type: "switch-check-task-page", page: targetPage }, "*");
+        return;
+      }
+      window.location.href = targetPage;
+    }
+
     function submitAndReturn() {
+      returnToArchiveDoc();
+      return;
       if (window.opener && !window.opener.closed) {
         window.close();
         return;
