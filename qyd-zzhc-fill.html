@@ -1107,6 +1107,32 @@
       cursor: not-allowed;
     }
 
+    .entrusted-field {
+      display: grid;
+      gap: 7px;
+    }
+
+    .entrusted-field span {
+      color: var(--muted);
+      font-size: 0.72rem;
+    }
+
+    .entrusted-field input {
+      width: 100%;
+      min-width: 0;
+      border: 1px solid var(--line-strong);
+      border-radius: 8px;
+      padding: 8px 10px;
+      color: var(--text);
+      background: #fffdfa;
+      outline: none;
+    }
+
+    .entrusted-field input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-soft);
+    }
+
     .equipment-ledger-card {
       border-radius: 22px;
       border: 1px solid rgba(91, 67, 43, 0.08);
@@ -3657,12 +3683,12 @@
         id: "attachment",
         group: "企业附件",
         name: "核查附件",
-        count: "3 项",
+        count: "7 项",
         desc: "集中维护企业公用附件，供人员、设备、业绩模块统一引用。",
         summary: [
-          { title: "应填附件", value: "8 项" },
+          { title: "应填附件", value: "10 项" },
           { title: "已上传", value: "6 项" },
-          { title: "待补充", value: "2 项" },
+          { title: "待补充", value: "4 项" },
           { title: "共享引用", value: "全部模块" }
         ],
         filters: [],
@@ -3680,7 +3706,9 @@
           "安全生产许可证",
           "授权委托书",
           "法人身份证复印件",
-          "企业章程"
+          "企业章程",
+          "检测机构管理制度以及质量控制措施",
+          "检测机构合并、改制、重组、分立材料"
         ],
         items: [
           {
@@ -3734,8 +3762,73 @@
               ["附件状态", "待更新"]
             ],
             tags: ["在线预览"]
+          },
+          {
+            name: "检测机构管理制度以及质量控制措施",
+            status: "上传附件",
+            statusType: "pending",
+            note: "检测机构核查必备材料",
+            fields: [
+              ["资料范围", "管理制度、质量控制措施"],
+              ["适用范围", "检测机构核查"],
+              ["附件状态", "待上传"]
+            ],
+            tags: ["核查附件", "待补充"]
+          },
+          {
+            name: "检测机构合并、改制、重组、分立材料",
+            status: "上传附件",
+            statusType: "pending",
+            note: "发生相关事项时提供",
+            fields: [
+              ["材料类型", "合并、改制、重组、分立材料"],
+              ["适用范围", "检测机构变更核查"],
+              ["附件状态", "待上传"]
+            ],
+            tags: ["核查附件", "待补充"]
           }
         ]
+      },
+      {
+        id: "entrusted-agent",
+        group: "企业附件",
+        name: "委托经办人",
+        count: "2 组信息",
+        desc: "委托信息从企业基本信息自动带出，企业可核对修改。授权委托书模板可下载，签字盖章后统一在“核查附件”上传。",
+        summary: [
+          { title: "信息来源", value: "企业基本信息" },
+          { title: "可编辑字段", value: "11 项" },
+          { title: "模板下载", value: "2 种" },
+          { title: "附件上传", value: "核查附件" }
+        ],
+        filters: [],
+        guide: [
+          "系统默认带出本企业基本信息，企业核对后可修改。",
+          "下载系统填充模板后，请完成法定代表人签字、单位盖章和委托经办人签字。",
+          "签字盖章后的授权委托书请统一到“核查附件”上传，不在本菜单重复上传。"
+        ],
+        alerts: [
+          "委托单位名称和统一社会信用代码应与营业执照保持一致。",
+          "委托经办人员发生变化时，应重新下载填充模板并上传最新版本。"
+        ],
+        attachments: ["授权委托书", "授权委托人身份证"],
+        entrustedFields: {
+          unit: [
+            ["委托单位名称", enterpriseProfile.name],
+            ["统一社会信用代码", enterpriseProfile.code],
+            ["邮寄送达地址", "北京市门头沟区示范路88号"],
+            ["邮寄送达地址邮编", "102300"],
+            ["法定代表人姓名", "王建民"],
+            ["法定代表人身份证号", "110109********1234"],
+            ["法定代表人电话", "138****2468"]
+          ],
+          agent: [
+            ["委托经办人员姓名", "李晓峰"],
+            ["委托经办人员电话", "139****5790"],
+            ["委托经办人员职务", "企业核查联系人"],
+            ["委托经办人员身份证号", "110109********5678"]
+          ]
+        }
       }
     ];
 
@@ -4543,7 +4636,7 @@
     }
 
     function renderFilters(module) {
-      const showBuilderSearch = module.id !== "attachment";
+      const showBuilderSearch = module.id !== "attachment" && module.id !== "entrusted-agent";
       elements.contentToolbar.classList.toggle("leader-toolbar", module.id === "leader");
       if (showBuilderSearch) {
         elements.builderSearchBox.hidden = false;
@@ -4554,7 +4647,7 @@
         elements.builderSearchBox.setAttribute("hidden", "hidden");
         elements.builderSearchBox.style.display = "none";
       }
-      const hideContentActions = module.id === "builder" || module.id === "attachment" || module.id === "equipment" || module.id === "leader";
+      const hideContentActions = module.id === "builder" || module.id === "attachment" || module.id === "entrusted-agent" || module.id === "equipment" || module.id === "leader";
       elements.contentActions.hidden = hideContentActions;
       elements.contentActions.style.display = hideContentActions ? "none" : "flex";
       elements.addLeaderButton.style.display = module.id === "title-person" || module.id === "worker" || module.id === "achievement" ? "inline-flex" : "none";
@@ -5460,6 +5553,85 @@
       render();
     }
 
+    function renderEntrustedAgentModule(module) {
+      const renderFieldGroup = (title, fields) => `
+        <section class="section-card">
+          <div class="section-head">
+            <div>
+              <h4>${title}</h4>
+              <p>信息已从本企业基本信息带出，可按授权委托书实际内容修改。</p>
+            </div>
+            <span class="badge ok">企业信息带出</span>
+          </div>
+          <div class="section-body">
+            <div class="info-grid">
+              ${fields.map(([label, value], index) => `
+                <label class="info-item entrusted-field">
+                  <span>${label}</span>
+                  <input type="text" data-entrusted-field="${title}-${index}" value="${escapeHtml(value)}">
+                </label>
+              `).join("")}
+            </div>
+          </div>
+        </section>
+      `;
+
+      return `
+        <div class="section-stack">
+          <section class="section-card">
+            <div class="section-head">
+              <div>
+                <h4>授权委托书</h4>
+                <p>请核对企业端带出的委托单位和经办人信息。签字盖章后，将授权委托书统一上传至“核查附件”。</p>
+              </div>
+              <span class="badge primary">可编辑</span>
+            </div>
+            <div class="section-body">
+              <div class="toolbar-actions">
+                <button class="outline-btn" type="button" data-entrusted-download="blank">下载空白模板</button>
+                <button class="solid-btn" type="button" data-entrusted-download="filled">下载系统填充模板</button>
+              </div>
+            </div>
+          </section>
+          ${renderFieldGroup("委托单位相关信息", module.entrustedFields.unit)}
+          ${renderFieldGroup("委托经办人员基本信息", module.entrustedFields.agent)}
+          <section class="section-card">
+            <div class="section-body">
+              <div class="upload-box">
+                <strong>签字盖章后上传</strong>
+                <p>请前往“核查附件”菜单上传授权委托书及委托经办人身份证附件，本菜单不重复上传文件。</p>
+              </div>
+            </div>
+          </section>
+        </div>
+      `;
+    }
+
+    function downloadEntrustedTemplate(mode) {
+      const module = modules.find((item) => item.id === "entrusted-agent");
+      if (!module) return;
+      const values = mode === "filled"
+        ? [...module.entrustedFields.unit, ...module.entrustedFields.agent]
+        : [...module.entrustedFields.unit, ...module.entrustedFields.agent].map(([label]) => [label, ""]);
+      const rows = values.map(([label, value]) => `<tr><th>${label}</th><td>${value || " "}</td></tr>`).join("");
+      const html = `<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><title>授权委托书</title>
+        <style>body{font-family:"Microsoft YaHei",sans-serif;padding:40px;color:#222}h1{text-align:center}
+        table{border-collapse:collapse;width:100%;margin-top:24px}th,td{border:1px solid #555;padding:12px;text-align:left}
+        th{width:30%;background:#f2f2f2}p{line-height:1.8;margin-top:28px}</style></head><body>
+        <h1>授权委托书</h1><p>本模板由企业资质核查系统生成，请企业核对信息后完成签字盖章。</p>
+        <table>${rows}</table><p>委托事项：建筑业企业资质动态核查相关业务办理。</p>
+        <p>委托期限：自委托书签署之日起至本次资质动态核查全部行为结束。</p>
+        <p style="margin-top:60px">委托单位（盖章）：____________　法定代表人（签字）：____________</p>
+        <p>委托经办人（签字）：____________　日期：2026年____月____日</p></body></html>`;
+      const blob = new Blob([html], { type: "application/msword;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = mode === "filled" ? "授权委托书-系统填充模板.doc" : "授权委托书-空白模板.doc";
+      link.click();
+      URL.revokeObjectURL(url);
+    }
+
 function renderItems(module) {
       ensureSelectedItem(module);
       const items = getFilteredItems(module);
@@ -6139,8 +6311,8 @@ function renderItems(module) {
       renderFilters(module);
       elements.contentBody.innerHTML = `
         <div class="section-stack">
-          ${module.id === "builder" ? renderBuilderTable(module) : module.id === "leader" ? renderLeaderTable(module) : module.id === "title-person" ? renderTitlePersonTable(module) : module.id === "worker" ? renderWorkerTable(module) : module.id === "equipment" ? renderEquipmentLedgerModule() : module.id === "achievement" ? renderAchievementLedgerModule(module) : renderItems(module)}
-          ${module.id === "builder" || module.id === "leader" || module.id === "title-person" || module.id === "worker" || module.id === "equipment" || module.id === "achievement" || module.id === "attachment" ? "" : renderUploadGuide(module)}
+          ${module.id === "builder" ? renderBuilderTable(module) : module.id === "leader" ? renderLeaderTable(module) : module.id === "title-person" ? renderTitlePersonTable(module) : module.id === "worker" ? renderWorkerTable(module) : module.id === "equipment" ? renderEquipmentLedgerModule() : module.id === "achievement" ? renderAchievementLedgerModule(module) : module.id === "entrusted-agent" ? renderEntrustedAgentModule(module) : renderItems(module)}
+          ${module.id === "builder" || module.id === "leader" || module.id === "title-person" || module.id === "worker" || module.id === "equipment" || module.id === "achievement" || module.id === "attachment" || module.id === "entrusted-agent" ? "" : renderUploadGuide(module)}
         </div>
       `;
     }
@@ -6276,6 +6448,23 @@ function renderItems(module) {
         state.builderSearch = "";
       }
       render();
+    });
+
+    elements.contentBody.addEventListener("click", (event) => {
+      const downloadButton = event.target.closest("[data-entrusted-download]");
+      if (!downloadButton || state.activeModuleId !== "entrusted-agent") return;
+      downloadEntrustedTemplate(downloadButton.dataset.entrustedDownload);
+    });
+
+    elements.contentBody.addEventListener("input", (event) => {
+      const input = event.target.closest("[data-entrusted-field]");
+      if (!input || state.activeModuleId !== "entrusted-agent") return;
+      const [groupTitle, indexText] = input.dataset.entrustedField.split("-");
+      const group = groupTitle === "委托单位相关信息" ? "unit" : "agent";
+      const index = Number(indexText);
+      if (Number.isInteger(index) && modules.find((item) => item.id === "entrusted-agent")?.entrustedFields[group]?.[index]) {
+        modules.find((item) => item.id === "entrusted-agent").entrustedFields[group][index][1] = input.value;
+      }
     });
 
     elements.qualificationStrip.addEventListener("click", (event) => {
