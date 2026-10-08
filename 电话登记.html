@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>案卷文书信息 - 电话记录演示</title>
+  <style>
+    :root{--blue:#168bd2;--blue-soft:#eaf6ff;--line:#dce9f1;--text:#243746;--muted:#6d7e89;--green:#1c9b68;--red:#d9534f;--shadow:0 18px 50px rgba(27,86,119,.16)}
+    *{box-sizing:border-box} body{margin:0;color:var(--text);font-family:"Microsoft YaHei UI","PingFang SC",Arial,sans-serif;background:#f4faff}
+    .top{height:112px;background:linear-gradient(115deg,#edfaff,#d9f1ff 55%,#effaff);border-bottom:1px solid #c8e5f3;text-align:center;padding-top:24px;position:relative;overflow:hidden}
+    .top:after{content:"";position:absolute;right:-30px;top:-100px;width:390px;height:250px;border:18px solid rgba(49,171,226,.12);border-radius:50%;transform:rotate(-18deg)}
+    .top h1{margin:0 0 10px;font-size:21px;color:#155a82;letter-spacing:1px}.top p{margin:0;color:#e45555;font-weight:700;font-size:16px}
+    .page{padding:18px 28px 36px;max-width:1500px;margin:auto}.crumb{font-size:13px;color:#74858f;margin:0 0 14px}
+    .toolbar{display:flex;justify-content:space-between;align-items:center;gap:14px;background:#fff;border:1px solid var(--line);padding:15px 18px;box-shadow:0 4px 14px rgba(50,120,155,.05)}
+    .toolbar strong{font-size:17px}.toolbar small{display:block;color:var(--muted);margin-top:5px}
+    .float-phone{position:fixed;right:28px;bottom:28px;z-index:10;display:flex;align-items:center;gap:8px;background:#168bd2;color:#fff;padding:13px 18px;border-radius:24px;box-shadow:0 8px 22px rgba(22,139,210,.3);font-size:14px}.float-phone:hover{background:#087abf;transform:translateY(-1px)}
+    button{font:inherit;cursor:pointer;border:0}.primary{background:var(--blue);color:#fff;padding:10px 17px;border-radius:4px;box-shadow:0 4px 10px rgba(22,139,210,.2)}.primary:hover{background:#087abf}
+    .sections{margin-top:15px}.section{background:#fff;border:1px solid var(--line);margin-bottom:12px}.section-head{height:56px;padding:0 20px;display:flex;align-items:center;justify-content:space-between;color:#263e4e;font-size:16px;border-left:4px solid var(--blue);cursor:pointer}.section-head span{font-size:14px;color:#8a9aa3}.section-body{padding:0 18px 18px}.section.collapsed .section-body{display:none}
+    .hint{background:#f7fbfd;border:1px solid #e3eff5;padding:11px 14px;color:#6a7c87;font-size:13px;margin:14px 0}
+    table{width:100%;border-collapse:collapse;font-size:14px}th{background:#f6fbfe;color:#425865;font-weight:700;text-align:left;height:48px}td,th{border-bottom:1px solid #e8f0f4;padding:13px 12px}td{height:54px}tr:hover td{background:#fbfdfe}.status{display:inline-flex;align-items:center;gap:6px;color:var(--green)}.dot{width:7px;height:7px;background:var(--green);border-radius:50%}.link{color:#1987c5;background:none}.lock{color:#a7b4ba;background:#f2f5f6;padding:7px 12px;border-radius:3px;cursor:not-allowed}.unlocked{color:#1685c0;background:#eef8ff;padding:7px 12px;border-radius:3px}
+    .action-cell{min-width:190px}.blocked-tip{display:block;color:#d9534f;font-size:12px;line-height:1.5;margin-top:6px;white-space:nowrap}.blocked-tip:before{content:"!";display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;margin-right:4px;border-radius:50%;background:#fff0ef;color:#d9534f;font-weight:700}
+    .empty{padding:24px;text-align:center;color:#8a9aa3}.modal{position:fixed;inset:0;background:rgba(21,50,67,.35);display:none;align-items:center;justify-content:center;padding:20px}.modal.show{display:flex}.dialog{width:min(690px,100%);background:#fff;box-shadow:var(--shadow);border-radius:4px}.dialog-head{padding:18px 22px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center}.dialog-head h2{font-size:18px;margin:0}.close{font-size:24px;color:#84959e;background:none}.form{padding:20px 22px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.field.full{grid-column:1/-1}.field label{display:block;font-size:14px;margin-bottom:7px;color:#485c68}.required{color:#e45c5c}.field input,.field select,.field textarea{width:100%;border:1px solid #cfdee6;padding:10px 11px;border-radius:3px;outline:none;color:var(--text);background:#fff}.field textarea{min-height:92px;resize:vertical}.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(22,139,210,.1)}.dialog-foot{display:flex;justify-content:flex-end;gap:10px;padding:14px 22px;border-top:1px solid var(--line)}.secondary{padding:10px 17px;background:#f3f6f8;color:#53656e;border-radius:3px}
+    @media(max-width:720px){.page{padding:14px}.toolbar{align-items:flex-start;flex-direction:column}.grid{grid-template-columns:1fr}.field.full{grid-column:auto}.section-body{overflow-x:auto}table{min-width:850px}}
+  </style>
+</head>
+<body>
+  <header class="top"><h1>案卷基本信息</h1><p>编号：京建核（门建）字[2026]第0318号</p></header>
+  <main class="page">
+    <div class="sections">
+      <section class="section collapsed"><div class="section-head">案卷基本信息<span>⌄</span></div><div class="section-body"></div></section>
+      <section class="section collapsed"><div class="section-head">被核查资质<span>⌄</span></div><div class="section-body"></div></section>
+      <section class="section collapsed"><div class="section-head">核查依据附件信息<span>⌄</span></div><div class="section-body"></div></section>
+      <section class="section"><div class="section-head">案卷文书信息<span>⌄</span></div><div class="section-body">
+        <table><thead><tr><th>序号</th><th>环节</th><th>编号</th><th>接件时间</th><th>本环节到期时间</th><th>操作</th></tr></thead><tbody>
+          <tr><td>1</td><td>核查通知书</td><td>京建核（延建）字[2026]第0034号</td><td>2026-04-27 09:50:40</td><td>--</td><td class="action-cell"><button class="link">操作列</button></td></tr>
+          <tr><td>2</td><td>上传异常截图</td><td>京建核（延建）字[2026]第0034号</td><td>2026-04-27 09:50:45</td><td>--</td><td class="action-cell"><button class="link">操作列</button></td></tr>
+          <tr><td>3</td><td>责令整改通知书</td><td>京建核（延建）字[2026]第0034号</td><td>2026-04-27 09:50:49</td><td>2026-04-27 09:50:49</td><td class="action-cell"><button class="link">操作列</button></td></tr>
+          <tr><td>4</td><td>核查结论</td><td>京建核（延建）字[2026]第0034号</td><td>2026-04-27 14:30:37</td><td>--</td><td class="action-cell"><button class="link">操作列</button></td></tr>
+          <tr><td>5</td><td>初审第1次复查材料</td><td>京建核（延建）字[2026]第0034号</td><td>2026-08-25 20:51:19</td><td>2026-09-26 00:00:00</td><td class="action-cell"><button class="lock" id="startBtn" title="请先登记核查启动电话记录">🔒 操作列</button><span class="blocked-tip">未登记核查电话记录，不允许操作</span></td></tr>
+          <tr><td>6</td><td>复审第1次复查资料</td><td>京建核（延建）字[2026]第0034号</td><td>2026-09-07 11:12:49</td><td>2026-09-26 00:00:00</td><td class="action-cell"><button class="lock" id="reviewBtn" title="请先登记复查电话记录">🔒 操作列</button><span class="blocked-tip">未登记复查电话记录，不允许操作</span></td></tr>
+          <tr><td>7</td><td>复审第1次复查结论</td><td>京建核（延建）字[2026]第0034号</td><td>2026-09-07 11:20:03</td><td>2026-09-26 00:00:00</td><td class="action-cell"><button class="link">操作列</button></td></tr>
+        </tbody></table>
+      </div></section>
+      <section class="section"><div class="section-head">电话通知记录 <span class="status"><i class="dot"></i><b id="recordStatus">未登记</b></span></div><div class="section-body">
+        <table id="phoneTable"><thead><tr><th>电话登记环节</th><th>系统限制措施</th><th>关联流程环节</th><th>联系人</th><th>联系电话</th><th>通知时间</th><th>是否知情</th><th>登记人</th><th>操作</th></tr></thead><tbody><tr id="emptyRow"><td colspan="9" class="empty">暂无电话通知记录，请从右上角“电话通知记录”入口登记</td></tr></tbody></table>
+      </div></section>
+    </div>
+  </main>
+  <button class="float-phone" id="openPhone" title="登记电话通知记录">☎ 电话登记</button>
+  <div class="modal" id="modal"><div class="dialog"><div class="dialog-head"><h2>新增电话通知记录</h2><button class="close" id="close">×</button></div><form class="form" id="form"><div class="grid">
+    <div class="field"><label>电话登记环节 <span class="required">*</span></label><select id="scene">
+      <option value="核查通知书发送后">核查通知书发送后</option>
+      <option value="初次核查不通过意见出具前">初次核查不通过意见出具前</option>
+      <option value="责令改正通知书发送后">责令改正通知书发送后</option>
+      <option value="阶段性复核不通过意见出具前">阶段性复核不通过意见出具前</option>
+      <option value="最终核查不通过结论出具前">最终核查不通过结论出具前</option>
+      <option value="最终核查不通过结论发送后">最终核查不通过结论发送后</option>
+    </select></div>
+    <div class="field"><label>关联流程环节 <span class="required">*</span></label><select id="node">
+      <option value="核查通知书之后">核查通知书之后</option>
+      <option value="初次核查结论之前">初次核查结论之前</option>
+      <option value="责改通知书之后">责改通知书之后</option>
+      <option value="阶段性复查结论">阶段性复查结论</option>
+      <option value="最终复查结论之前">最终复查结论之前</option>
+      <option value="最终复查结论之后">最终复查结论之后</option>
+    </select></div>
+    <div class="field full"><label>对应系统限制措施</label><input id="restriction" readonly value="完成电话告知及记录单后，由科室科长解锁后续办案操作"></div>
+    <div class="field"><label>联系人姓名 <span class="required">*</span></label><input id="name" value="王建国" required></div>
+    <div class="field"><label>联系电话 <span class="required">*</span></label><input id="phone" value="138****5621" required></div>
+    <div class="field"><label>通知时间 <span class="required">*</span></label><input id="time" type="datetime-local" required></div>
+    <div class="field"><label>联系人是否知情 <span class="required">*</span></label><select id="known"><option>是</option><option>否</option></select></div>
+    <div class="field full"><label>通知简要内容 <span class="required">*</span></label><textarea id="content" required>您好，现通知贵单位配合开展本次核查，请按系统要求提交相关核查材料。</textarea></div>
+  </div></form><div class="dialog-foot"><button class="secondary" id="cancel">取消</button><button class="primary" id="save">保存记录</button></div></div></div>
+  <script>
+    const modal=document.querySelector("#modal"), form=document.querySelector("#form"), table=document.querySelector("#phoneTable tbody"), status=document.querySelector("#recordStatus");
+    document.querySelector("#time").value=new Date().toISOString().slice(0,16);
+    document.querySelectorAll(".section-head").forEach(h=>h.addEventListener("click",()=>h.parentElement.classList.toggle("collapsed")));
+    const open=()=>modal.classList.add("show"), close=()=>modal.classList.remove("show");
+    document.querySelector("#openPhone").onclick=open; document.querySelector("#close").onclick=close; document.querySelector("#cancel").onclick=close;
+    const restrictions={
+      "核查通知书发送后":"完成电话告知及记录单后，由科室科长解锁后续办案操作",
+      "初次核查不通过意见出具前":"未完成电话告知及记录单，系统禁止出具不通过核查意见；完成后自动放开",
+      "责令改正通知书发送后":"完成电话告知及记录单后，由科室科长解锁后续办案操作",
+      "阶段性复核不通过意见出具前":"未完成电话告知及记录单，系统禁止出具阶段性复核不通过意见；完成后自动放开",
+      "最终核查不通过结论出具前":"未完成电话告知及记录单，系统禁止出具最终核查不通过结论；完成后自动放开",
+      "最终核查不通过结论发送后":"完成电话告知及记录单后，由科室科长解锁后续办案操作"
+    };
+    const sceneNodes={
+      "核查通知书发送后":"核查通知书之后",
+      "初次核查不通过意见出具前":"初次核查结论之前",
+      "责令改正通知书发送后":"责改通知书之后",
+      "阶段性复核不通过意见出具前":"阶段性复查结论",
+      "最终核查不通过结论出具前":"最终复查结论之前",
+      "最终核查不通过结论发送后":"最终复查结论之后"
+    };
+    const syncSceneFields=()=>{
+      const scene=document.querySelector("#scene").value;
+      document.querySelector("#node").value=sceneNodes[scene];
+      document.querySelector("#restriction").value=restrictions[scene];
+    };
+    document.querySelector("#scene").onchange=()=>{
+      syncSceneFields();
+    };
+    syncSceneFields();
+    document.querySelector("#save").onclick=()=>{
+      if(!form.reportValidity())return;
+      const scene=document.querySelector("#scene").value;
+      const restriction=restrictions[scene];
+      const node=document.querySelector("#node").value;
+      const name=document.querySelector("#name").value;
+      const phone=document.querySelector("#phone").value;
+      const time=document.querySelector("#time").value.replace("T"," ");
+      const known=document.querySelector("#known").value;
+      const row=document.createElement("tr");
+      row.innerHTML=`<td>${scene}</td><td>${restriction}</td><td>${node}</td><td>${name}</td><td>${phone}</td><td>${time}</td><td>${known}</td><td>当前用户</td><td><button class="link">查看</button></td>`;
+      const empty=document.querySelector("#emptyRow"); if(empty)empty.remove();
+      table.appendChild(row);
+      status.textContent="已登记"; status.parentElement.className="status";
+      if(scene==="核查通知书发送后"){
+        document.querySelector("#startBtn").className="unlocked";
+        document.querySelector("#startBtn").textContent="启动核查";
+        document.querySelector("#startBtn").title="";
+      }
+      if(scene==="阶段性复核不通过意见出具前"){
+        document.querySelector("#reviewBtn").className="unlocked";
+        document.querySelector("#reviewBtn").textContent="复查初审";
+        document.querySelector("#reviewBtn").title="";
+      }
+      const tip=scene==="核查通知书发送后"||scene==="阶段性复核不通过意见出具前" ? document.querySelector(".blocked-tip") : null;
+      if(tip)tip.remove();
+      close(); alert(`电话记录已保存，已关联：${node}`);
+    };
+    modal.onclick=e=>{if(e.target===modal)close()};
+  </script>
+</body>
+</html>
