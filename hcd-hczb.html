@@ -3826,6 +3826,74 @@
             "授权委托人身份证"
           ]
         }
+      },
+      {
+        id: "entrusted-agent",
+        name: "委托经办人",
+        navName: "委托经办人",
+        label: "委托",
+        desc: "展示企业端提交的授权委托书信息，审批人员只读查看，不在本页面录入。",
+        status: "企业端带出",
+        level: "primary",
+        totals: {
+          objects: "2组",
+          passed: "已填报",
+          pending: "0项",
+          risk: "0项"
+        },
+        subtypes: [],
+        overview: [],
+        sections: [
+          {
+            title: "委托单位相关信息",
+            desc: "以下信息由企业端授权委托书带出，用于确认委托主体、文书送达和法定代表人身份。",
+            source: "enterprise",
+            type: "grid",
+            items: [
+              ["委托单位名称", "企业端提交值"],
+              ["统一社会信用代码", "企业端提交值"],
+              ["邮寄送达地址", "企业端提交值"],
+              ["邮寄送达地址邮编", "企业端提交值"],
+              ["法定代表人姓名", "企业端提交值"],
+              ["法定代表人身份证号", "企业端提交值"],
+              ["法定代表人电话", "企业端提交值"]
+            ]
+          },
+          {
+            title: "委托经办人员基本信息",
+            desc: "以下信息由企业端授权委托书带出，用于确认实际办理核查业务的受托经办人员。",
+            source: "enterprise",
+            type: "grid",
+            items: [
+              ["委托经办人员姓名", "企业端提交值"],
+              ["委托经办人员电话", "企业端提交值"],
+              ["委托经办人员职务", "企业端提交值"],
+              ["委托经办人员身份证号", "企业端提交值"]
+            ]
+          }
+        ],
+        details: {
+          standards: [
+            "委托单位名称应与营业执照全称一致。",
+            "统一社会信用代码、法定代表人信息应与企业基础资料保持一致。",
+            "经办人员信息用于核查业务联系和授权身份核验。"
+          ],
+          alerts: [
+            "授权委托书缺少法定代表人签字或单位盖章时，委托关系无效。",
+            "委托经办人员发生变更的，企业应及时重新提交授权材料。",
+            "经办人员身份证信息与授权委托书不一致时，应提示人工复核。"
+          ],
+          conclusion: {
+            pass: "委托单位、法定代表人及委托经办人员信息完整，授权关系可用于本次资质动态核查。",
+            fail: "委托信息缺失、主体信息不一致或授权文件签章不完整，需补正后再确认。"
+          },
+          attachments: [
+            "授权委托书",
+            "授权委托人身份证",
+            "营业执照",
+            "法定代表人身份证复印件"
+          ]
+        }
       }
     ];
 
@@ -5007,6 +5075,7 @@
       const workerCount = getPersonnelSubtypeCount("技术工人");
       const equipmentCount = equipmentModule?.sections?.flatMap((section) => section.cards || []).length || 0;
       const achievementCount = achievementModule?.sections?.flatMap((section) => section.cards || []).length || 0;
+      const entrustedModule = modules.find((module) => module.id === "entrusted-agent");
 
       return [
         {
@@ -5027,7 +5096,8 @@
           desc: "集中查看企业公共附件，避免在主资料和附件之间来回切换。",
           count: "1项",
           items: [
-            { moduleId: "attachment", title: "核查附件", note: "集中查看" }
+            { moduleId: "attachment", title: "核查附件", note: "集中查看" },
+            { moduleId: "entrusted-agent", title: "委托经办人", note: entrustedModule?.totals.objects || "2组" }
           ]
         }
       ];
@@ -5079,7 +5149,7 @@
         state.activeSubtype = getDefaultSubtype(module);
       }
 
-      if (module.id === "equipment" || module.id === "achievement") {
+      if (module.id === "equipment" || module.id === "achievement" || module.id === "entrusted-agent") {
         state.activeSubtype = "\u5168\u90e8";
         elements.subTypeFilters.innerHTML = "";
         return;
@@ -5124,7 +5194,7 @@
               <h3>${section.title}</h3>
               <p>${section.desc}</p>
             </div>
-            <span class="badge primary">字段结构</span>
+            <span class="badge ${section.source === "enterprise" ? "ok" : "primary"}">${section.source === "enterprise" ? "企业端带出 · 只读" : "字段结构"}</span>
           </div>
           ` : ""}
           <div class="section-body">
