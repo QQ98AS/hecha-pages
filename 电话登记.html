@@ -64,7 +64,6 @@
       <option value="最终复查结论之前">最终复查结论之前</option>
       <option value="最终复查结论之后">最终复查结论之后</option>
     </select></div>
-    <div class="field full"><label>对应系统限制措施</label><input id="restriction" readonly value="完成电话告知及记录单后，由科室科长解锁后续办案操作"></div>
     <div class="field"><label>联系人姓名 <span class="required">*</span></label><input id="name" value="王建国" required></div>
     <div class="field"><label>联系电话 <span class="required">*</span></label><input id="phone" value="138****5621" required></div>
     <div class="field"><label>通知时间 <span class="required">*</span></label><input id="time" type="datetime-local" required></div>
@@ -96,7 +95,6 @@
     const syncSceneFields=()=>{
       const scene=document.querySelector("#scene").value;
       document.querySelector("#node").value=sceneNodes[scene];
-      document.querySelector("#restriction").value=restrictions[scene];
     };
     document.querySelector("#scene").onchange=()=>{
       syncSceneFields();
