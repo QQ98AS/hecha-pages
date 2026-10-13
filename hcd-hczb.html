@@ -440,6 +440,30 @@
       overflow: hidden;
     }
 
+    .workspace.entrusted-agent-view {
+      grid-template-columns: 260px minmax(0, 1fr);
+    }
+
+    .workspace.entrusted-agent-view .detail-panel {
+      display: none;
+    }
+
+    .workspace.entrusted-agent-view .toolbar-search {
+      display: none;
+    }
+
+    .workspace.entrusted-agent-view .toolbar {
+      display: none;
+    }
+
+    .workspace.review-process-view {
+      grid-template-columns: 260px minmax(0, 1fr) 400px;
+    }
+
+    .workspace.review-process-view .toolbar {
+      display: none;
+    }
+
     .nav-panel,
     .content-panel,
     .detail-panel {
@@ -526,15 +550,41 @@
 
     .module-group-head {
       display: flex;
-      justify-content: flex-start;
-      align-items: start;
+      justify-content: space-between;
+      align-items: center;
       gap: 10px;
+      width: 100%;
       padding: 2px 2px 0;
+      border: 0;
+      background: transparent;
+      color: inherit;
+      text-align: left;
+      cursor: pointer;
     }
 
     .module-group-head strong {
       font-size: 0.94rem;
       line-height: 1.35;
+    }
+
+    .module-group-toggle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      flex: 0 0 28px;
+      color: var(--muted);
+      transition: transform 160ms ease;
+    }
+
+    .module-group-card.collapsed .module-group-toggle {
+      transform: rotate(-90deg);
+    }
+
+    .module-group-card.collapsed > p,
+    .module-group-card.collapsed .module-group-list {
+      display: none;
     }
 
     .module-group-card p {
@@ -778,6 +828,19 @@
 
     .toolbar-search.attachment-search .search-button {
       flex: 0 0 auto;
+      white-space: nowrap;
+    }
+
+    .toolbar-search.entrusted-agent-search {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      min-height: 40px;
+    }
+
+    .toolbar-search.entrusted-agent-search .search-button {
+      flex: 0 0 auto;
+      margin-left: auto;
       white-space: nowrap;
     }
 
@@ -2773,6 +2836,105 @@
       flex-wrap: wrap;
     }
 
+    .review-summary-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .review-workbench {
+      display: grid;
+      gap: 18px;
+      padding: 20px;
+    }
+
+    .review-workbench-head,
+    .review-stage-summary-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .review-workbench-head h3,
+    .review-stage-summary-head h3 {
+      margin: 0 0 5px;
+      font-size: 1rem;
+    }
+
+    .review-workbench-head p,
+    .review-stage-summary-head p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.78rem;
+      line-height: 1.6;
+    }
+
+    .review-summary-item {
+      min-width: 0;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.78);
+    }
+
+    .review-summary-item span {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--muted);
+      font-size: 0.74rem;
+    }
+
+    .review-summary-item strong {
+      font-size: 0.84rem;
+      line-height: 1.5;
+      overflow-wrap: anywhere;
+    }
+
+    .review-result-options {
+      display: grid;
+      gap: 8px;
+    }
+
+    .review-result-option {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.78);
+      cursor: pointer;
+    }
+
+    .review-result-option input {
+      margin: 3px 0 0;
+      accent-color: var(--primary);
+    }
+
+    .review-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 0.76rem;
+    }
+
+    .review-meta strong {
+      color: var(--text);
+      font-weight: 600;
+      text-align: right;
+    }
+
+    @media (max-width: 1380px) {
+      .workspace.review-process-view {
+        grid-template-columns: 250px minmax(0, 1fr);
+      }
+    }
+
+
     .upload-file-list {
       display: flex;
       gap: 8px;
@@ -2918,6 +3080,10 @@
       }
 
       .workspace {
+        grid-template-columns: 1fr;
+      }
+
+      .workspace.review-process-view {
         grid-template-columns: 1fr;
       }
 
@@ -3200,6 +3366,36 @@
     const enterpriseEquipmentPool = [{"id":"src-100","type":"混凝土设备","name":"拌和设备 01","spec":"LB1500 / 江苏无锡 / 2022-03","unit":"台","quantity":1,"capacity":"315 千瓦","original":"398","net":"328","status":"自有","attachmentMode":"view","attachmentName":"沥青拌和站铭牌照片.jpg"},{"id":"src-101","type":"混凝土设备","name":"拌和设备 01","spec":"HZS60 / 湖南长沙 / 2021-11","unit":"台","quantity":1,"capacity":"110 千瓦","original":"168","net":"126","status":"自有","attachmentMode":"view","attachmentName":"HZS60计量标定表.pdf"},{"id":"src-102","type":"混凝土设备","name":"稳定土设备 01","spec":"WBZ300 / 320 吨/小时","unit":"台","quantity":1,"capacity":"132 千瓦","original":"156","net":"121","status":"自有","attachmentMode":"view","attachmentName":"稳定土设备01检修记录.pdf"},{"id":"src-103","type":"混凝土设备","name":"稳定土设备 02","spec":"WBZ400 / 400 吨/小时","unit":"台","quantity":1,"capacity":"132 千瓦","original":"156","net":"121","status":"自有","attachmentMode":"pending","attachmentName":""},{"id":"src-104","type":"混凝土设备","name":"稳定土设备 03","spec":"WBZ500 / 500 吨/小时","unit":"台","quantity":1,"capacity":"132 千瓦","original":"156","net":"121","status":"自有","attachmentMode":"view","attachmentName":"稳定土设备03铭牌照片.jpg"},{"id":"src-105","type":"混凝土设备","name":"稳定土设备 04","spec":"WBZ600 / 620 吨/小时","unit":"台","quantity":1,"capacity":"132 千瓦","original":"156","net":"121","status":"自有","attachmentMode":"pending","attachmentName":""},{"id":"src-106","type":"路面设备","name":"摊铺机 A","spec":"SUM8200 / 德国 / 2021-08","unit":"台","quantity":1,"capacity":"177 千瓦","original":"268","net":"206","status":"自有","attachmentMode":"view","attachmentName":"摊铺机A现场照片.png"},{"id":"src-107","type":"路面设备","name":"摊铺机 B","spec":"ABG8820 / 德国 / 2022-05","unit":"台","quantity":1,"capacity":"182 千瓦","original":"296","net":"228","status":"自有","attachmentMode":"view","attachmentName":"摊铺机B铭牌照片.jpg"},{"id":"src-108","type":"路面设备","name":"压路机 01","spec":"XS223J / 徐州 / 2021-06","unit":"台","quantity":1,"capacity":"140 千瓦","original":"69","net":"50","status":"自有","attachmentMode":"view","attachmentName":"压路机01购置发票.pdf"},{"id":"src-109","type":"路面设备","name":"压路机 02","spec":"XS223J / 徐州 / 2021-09","unit":"台","quantity":1,"capacity":"140 千瓦","original":"69","net":"50","status":"自有","attachmentMode":"view","attachmentName":"压路机02设备照片.jpg"},{"id":"src-110","type":"路面设备","name":"压路机 03","spec":"YZ18 / 洛阳 / 2020-04","unit":"台","quantity":1,"capacity":"118 千瓦","original":"56","net":"39","status":"自有","attachmentMode":"pending","attachmentName":""},{"id":"src-111","type":"路面设备","name":"压路机 04","spec":"YZ20 / 洛阳 / 2020-12","unit":"台","quantity":1,"capacity":"128 千瓦","original":"61","net":"44","status":"自有","attachmentMode":"pending","attachmentName":""},{"id":"src-112","type":"路面设备","name":"压路机 05","spec":"XS263J / 徐州 / 2022-02","unit":"台","quantity":1,"capacity":"147 千瓦","original":"76","net":"58","status":"自有","attachmentMode":"view","attachmentName":"压路机05检修记录.pdf"},{"id":"src-113","type":"起重设备","name":"钻机 01","spec":"SR285 / 220 千牛·米","unit":"台","quantity":1,"capacity":"257 千瓦","original":"320","net":"246","status":"自有","attachmentMode":"view","attachmentName":"钻机01动力参数表.pdf"},{"id":"src-114","type":"起重设备","name":"钻机 02","spec":"XR220D / 230 千牛·米","unit":"台","quantity":1,"capacity":"257 千瓦","original":"320","net":"246","status":"自有","attachmentMode":"pending","attachmentName":""},{"id":"src-115","type":"起重设备","name":"架桥机 01","spec":"JQJ200 / 80 吨","unit":"台","quantity":1,"capacity":"185 千瓦","original":"460","net":"372","status":"自有","attachmentMode":"view","attachmentName":"架桥机01检测报告.pdf"},{"id":"src-116","type":"起重设备","name":"架桥机 02","spec":"JQJ220 / 90 吨","unit":"台","quantity":1,"capacity":"185 千瓦","original":"460","net":"372","status":"自有","attachmentMode":"pending","attachmentName":""},{"id":"src-117","type":"混凝土设备","name":"泵车 01","spec":"SYM5449THB / 56 米","unit":"台","quantity":1,"capacity":"348 千瓦","original":"365","net":"286","status":"自有","attachmentMode":"pending","attachmentName":""},{"id":"src-118","type":"混凝土设备","name":"泵车 02","spec":"SYM5449THB / 56 米","unit":"台","quantity":1,"capacity":"348 千瓦","original":"365","net":"286","status":"自有","attachmentMode":"view","attachmentName":"泵车02维修记录.pdf"},{"id":"src-119","type":"混凝土设备","name":"泵车 03","spec":"HB62V / 62 米","unit":"台","quantity":1,"capacity":"348 千瓦","original":"365","net":"286","status":"自有","attachmentMode":"pending","attachmentName":""},{"id":"src-120","type":"混凝土设备","name":"泵车 04","spec":"HB62V / 62 米","unit":"台","quantity":1,"capacity":"348 千瓦","original":"365","net":"286","status":"自有","attachmentMode":"view","attachmentName":"泵车04年检报告.pdf"},{"id":"src-121","type":"土方设备","name":"挖掘机 A","spec":"ZX330 / 合肥 / 2021-07","unit":"台","quantity":1,"capacity":"202 千瓦","original":"136","net":"98","status":"自有","attachmentMode":"pending","attachmentName":""},{"id":"src-122","type":"土方设备","name":"挖掘机 B","spec":"PC360 / 常州 / 2022-01","unit":"台","quantity":1,"capacity":"202 千瓦","original":"148","net":"108","status":"自有","attachmentMode":"view","attachmentName":"挖掘机B购置发票.pdf"},{"id":"src-123","type":"隧道设备","name":"掘进设备 01","spec":"EBZ200 / 隧道掘进机","unit":"台","quantity":1,"capacity":"200 千瓦","original":"288","net":"224","status":"自有","attachmentMode":"view","attachmentName":"掘进设备01运行记录.pdf"},{"id":"src-124","type":"隧道设备","name":"掘进设备 02","spec":"EBZ260 / 隧道掘进机","unit":"台","quantity":1,"capacity":"200 千瓦","original":"288","net":"224","status":"自有","attachmentMode":"pending","attachmentName":""},{"id":"src-125","type":"混凝土设备","name":"喷射泵 01","spec":"HSP-7 / 隧道喷射泵","unit":"台","quantity":1,"capacity":"110 千瓦","original":"86","net":"63","status":"自有","attachmentMode":"pending","attachmentName":""},{"id":"src-126","type":"混凝土设备","name":"喷射泵 02","spec":"HSP-7 / 隧道喷射泵","unit":"台","quantity":1,"capacity":"110 千瓦","original":"86","net":"63","status":"自有","attachmentMode":"pending","attachmentName":""},{"id":"src-127","type":"混凝土设备","name":"喷射泵 03","spec":"TK700 / 湿喷台车","unit":"台","quantity":1,"capacity":"110 千瓦","original":"86","net":"63","status":"自有","attachmentMode":"view","attachmentName":"喷射泵03设备照片.jpg"},{"id":"src-128","type":"混凝土设备","name":"喷射泵 04","spec":"TK700 / 湿喷台车","unit":"台","quantity":1,"capacity":"110 千瓦","original":"86","net":"63","status":"自有","attachmentMode":"pending","attachmentName":""},{"id":"src-129","type":"混凝土设备","name":"压浆设备 01","spec":"YJ-150 / 自动压浆机","unit":"台","quantity":1,"capacity":"55 千瓦","original":"28","net":"20","status":"自有","attachmentMode":"pending","attachmentName":""},{"id":"src-130","type":"混凝土设备","name":"压浆设备 02","spec":"YJ-200 / 自动压浆机","unit":"台","quantity":1,"capacity":"55 千瓦","original":"28","net":"20","status":"自有","attachmentMode":"view","attachmentName":"压浆设备02检修记录.pdf"},{"id":"src-131","type":"路面设备","name":"平地机 A","spec":"GR215 / 徐州 / 2021-10","unit":"台","quantity":1,"capacity":"160 千瓦","original":"102","net":"71","status":"自有","attachmentMode":"view","attachmentName":"平地机A发动机参数表.pdf"},{"id":"src-132","type":"路面设备","name":"平地机 B","spec":"PY220 / 天津 / 2022-03","unit":"台","quantity":1,"capacity":"165 千瓦","original":"109","net":"78","status":"自有","attachmentMode":"view","attachmentName":"平地机B设备照片.jpg"},{"id":"src-133","type":"起重设备","name":"吊车 01","spec":"QY35K5C / 长沙 / 2021-05","unit":"台","quantity":1,"capacity":"276 千瓦","original":"176","net":"132","status":"自有","attachmentMode":"view","attachmentName":"35吨吊车检测报告.pdf"},{"id":"src-134","type":"土方设备","name":"推土机 01","spec":"SD22 / 162 千瓦","unit":"台","quantity":1,"capacity":"162 千瓦","original":"152","net":"112","status":"自有","attachmentMode":"view","attachmentName":"推土机01发动机铭牌.jpg"},{"id":"src-135","type":"土方设备","name":"推土机 02","spec":"TY220 / 175 千瓦","unit":"台","quantity":1,"capacity":"175 千瓦","original":"152","net":"112","status":"自有","attachmentMode":"pending","attachmentName":""},{"id":"src-136","type":"土方设备","name":"推土机 03","spec":"SD32 / 235 千瓦","unit":"台","quantity":1,"capacity":"235 千瓦","original":"152","net":"112","status":"自有","attachmentMode":"pending","attachmentName":""},{"id":"src-137","type":"土方设备","name":"推土机 04","spec":"D85ESS / 180 千瓦","unit":"台","quantity":1,"capacity":"180 千瓦","original":"152","net":"112","status":"自有","attachmentMode":"view","attachmentName":"推土机04保养记录.pdf"},{"id":"src-138","type":"土方设备","name":"推土机 05","spec":"TY320 / 238 千瓦","unit":"台","quantity":1,"capacity":"238 千瓦","original":"152","net":"112","status":"自有","attachmentMode":"pending","attachmentName":""},{"id":"src-139","type":"土方设备","name":"空压机 01","spec":"VY-9/7 / 9 立方米","unit":"台","quantity":1,"capacity":"","original":"","net":"","status":"自有","attachmentMode":"view","attachmentName":"空压机01检修单.pdf"},{"id":"src-140","type":"土方设备","name":"空压机 02","spec":"LGY9/7 / 9 立方米","unit":"台","quantity":1,"capacity":"","original":"","net":"","status":"自有","attachmentMode":"pending","attachmentName":""},{"id":"src-141","type":"土方设备","name":"空压机 03","spec":"PDSF102S / 10 立方米","unit":"台","quantity":1,"capacity":"","original":"","net":"","status":"自有","attachmentMode":"pending","attachmentName":""},{"id":"src-142","type":"土方设备","name":"装载机 01","spec":"ZL50GN / 3 立方米","unit":"台","quantity":1,"capacity":"","original":"","net":"","status":"自有","attachmentMode":"view","attachmentName":"装载机01购置发票.pdf"},{"id":"src-143","type":"土方设备","name":"装载机 02","spec":"LW500KV / 3 立方米","unit":"台","quantity":1,"capacity":"","original":"","net":"","status":"自有","attachmentMode":"pending","attachmentName":""},{"id":"src-144","type":"土方设备","name":"装载机 03","spec":"SEM656D / 2.8 立方米","unit":"台","quantity":1,"capacity":"","original":"","status":"自有","attachmentMode":"pending","attachmentName":""},{"id":"src-145","type":"土方设备","name":"装载机 04","spec":"ZL50C / 3 立方米","unit":"台","quantity":1,"capacity":"","original":"","status":"自有","attachmentMode":"pending","attachmentName":""},{"id":"src-146","type":"土方设备","name":"装载机 05","spec":"LG855N / 3 立方米","unit":"台","quantity":1,"capacity":"","original":"","status":"自有","attachmentMode":"view","attachmentName":"装载机05设备照片.jpg"},{"id":"src-147","type":"混凝土设备","name":"拌和设备 S1","spec":"HZS40 / 40 立方米/小时","unit":"台","quantity":1,"capacity":"","original":"","net":"","status":"自有","attachmentMode":"view","attachmentName":"HZS40检定报告.pdf"},{"id":"src-148","type":"混凝土设备","name":"拌和设备 S2","spec":"HZS35 / 35 立方米/小时","unit":"台","quantity":1,"capacity":"","original":"","net":"","status":"自有","attachmentMode":"pending","attachmentName":""},{"id":"src-149","type":"起重设备","name":"重型架桥机 01","spec":"JQJ200 / 200 吨","unit":"台","quantity":1,"capacity":"","original":"","net":"","status":"自有","attachmentMode":"view","attachmentName":"重型架桥机01检测报告.pdf"},{"id":"src-150","type":"起重设备","name":"中型架桥机 01","spec":"JQJ80 / 80 吨","unit":"台","quantity":1,"capacity":"","original":"","net":"","status":"自有","attachmentMode":"view","attachmentName":"中型架桥机01铭牌照片.jpg"},{"id":"src-151","type":"混凝土设备","name":"搅拌站 01","spec":"HZS180 / 180 立方米/小时","unit":"台","quantity":1,"capacity":"","original":"","net":"","status":"自有","attachmentMode":"view","attachmentName":"搅拌站01实验室台账.pdf"},{"id":"src-152","type":"运输设备","name":"运输车 01","spec":"12 方 / 重汽底盘","unit":"台","quantity":1,"capacity":"","original":"","net":"","status":"自有","attachmentMode":"view","attachmentName":"运输车01行驶证.jpg"},{"id":"src-153","type":"运输设备","name":"运输车 02","spec":"12 方 / 陕汽底盘","unit":"台","quantity":1,"capacity":"","original":"","status":"自有","attachmentMode":"pending","attachmentName":""},{"id":"src-154","type":"运输设备","name":"运输车 03","spec":"10 方 / 重汽底盘","unit":"台","quantity":1,"capacity":"","original":"","status":"自有","attachmentMode":"pending","attachmentName":""},{"id":"src-155","type":"运输设备","name":"运输车 04","spec":"12 方 / 福田底盘","unit":"台","quantity":1,"capacity":"","original":"","status":"自有","attachmentMode":"view","attachmentName":"运输车04维修记录.pdf"},{"id":"src-156","type":"混凝土设备","name":"输送泵 01","spec":"HBT80 / 混凝土输送泵","unit":"台","quantity":1,"capacity":"","original":"","status":"自有","attachmentMode":"view","attachmentName":"输送泵01年检报告.pdf"},{"id":"src-157","type":"混凝土设备","name":"输送泵 02","spec":"HBT90 / 混凝土输送泵","unit":"台","quantity":1,"capacity":"","original":"","status":"自有","attachmentMode":"pending","attachmentName":""},{"id":"src-158","type":"船舶设备","name":"打桩船 01","spec":"海工桩1号 / 架高 62 米","unit":"台","quantity":1,"capacity":"","original":"","status":"自有","attachmentMode":"view","attachmentName":"打桩船01船检证书.pdf"},{"id":"src-159","type":"船舶设备","name":"起重船 01","spec":"海吊 200 / 220 吨","unit":"台","quantity":1,"capacity":"","original":"","status":"自有","attachmentMode":"view","attachmentName":"起重船01设备清单.pdf"},{"id":"src-160","type":"船舶设备","name":"半潜驳 01","spec":"3000 吨级半潜驳","unit":"台","quantity":1,"capacity":"","original":"","status":"自有","attachmentMode":"view","attachmentName":"半潜驳01适航证书.pdf"},{"id":"src-161","type":"船舶设备","name":"铺排船 01","spec":"排宽 42 米","unit":"台","quantity":1,"capacity":"","original":"","status":"自有","attachmentMode":"pending","attachmentName":""},{"id":"src-162","type":"船舶设备","name":"耙吸船 01","spec":"2200 立方米舱容自航耙吸船","unit":"台","quantity":1,"capacity":"","original":"","status":"自有","attachmentMode":"view","attachmentName":"耙吸船01疏浚能力说明.pdf"},{"id":"src-163","type":"船舶设备","name":"绞吸船 01","spec":"总装机功率 5600 千瓦","unit":"台","quantity":1,"capacity":"5600 千瓦","original":"","status":"自有","attachmentMode":"pending","attachmentName":""},{"id":"src-164","type":"船舶设备","name":"斗容船 01","spec":"8.5 立方米斗容挖泥船","unit":"台","quantity":1,"capacity":"","original":"","status":"自有","attachmentMode":"view","attachmentName":"斗容船01技术参数表.pdf"},{"id":"src-165","type":"船舶设备","name":"打桩船 A","spec":"常规打桩船","unit":"台","quantity":1,"capacity":"","original":"","status":"自有","attachmentMode":"pending","attachmentName":""},{"id":"src-166","type":"船舶设备","name":"起重船 A","spec":"160 吨起重船","unit":"台","quantity":1,"capacity":"","original":"","status":"自有","attachmentMode":"pending","attachmentName":""},{"id":"src-167","type":"船舶设备","name":"挖泥船 A","spec":"总装机功率 1500 千瓦","unit":"台","quantity":1,"capacity":"1500 千瓦","original":"","status":"自有","attachmentMode":"view","attachmentName":"挖泥船A船检报告.pdf"},{"id":"src-168","type":"船舶设备","name":"斗容船 A","spec":"2.5 立方米斗容挖泥船","unit":"台","quantity":1,"capacity":"","original":"","status":"自有","attachmentMode":"pending","attachmentName":""}];
 
     const modules = [
+      {
+        id: "review-process",
+        name: "核查流程",
+        navName: "核查流程",
+        label: "流程",
+        desc: "按办理顺序查看本次核查各环节的办理状态、责任岗位和处理记录。",
+        status: "办理流程",
+        level: "primary",
+        totals: { objects: "7个环节", passed: "0个", pending: "7个", risk: "0个" },
+        navStages: ["初审", "复审", "核查结论", "责改", "复查初审", "复查复审", "复查结论"],
+        subtypes: [],
+        overview: [],
+        sections: [
+          {
+            title: "核查流程环节",
+            desc: "选择左侧环节查看对应办理信息。",
+            source: "system",
+            type: "cards",
+            cards: [
+              { subtype: "流程环节", name: "初审", meta: ["办理岗位：核查人A", "办理内容：核对企业提交的核查资料", "办理状态：待办理"], badges: [{ text: "待办理", type: "warn" }] },
+              { subtype: "流程环节", name: "复审", meta: ["办理岗位：核查人B", "办理内容：复核初审意见及核查依据", "办理状态：待办理"], badges: [{ text: "待办理", type: "warn" }] },
+              { subtype: "流程环节", name: "核查结论", meta: ["办理岗位：核查人A", "办理内容：形成并送达本次核查结论", "办理状态：待办理"], badges: [{ text: "待办理", type: "warn" }] },
+              { subtype: "流程环节", name: "责改", meta: ["办理岗位：核查人A", "办理内容：对核查不通过事项送达责令改正通知", "办理状态：待办理"], badges: [{ text: "待办理", type: "warn" }] },
+              { subtype: "流程环节", name: "复查初审", meta: ["办理岗位：核查人A", "办理内容：审核企业提交的整改材料", "办理状态：待办理"], badges: [{ text: "待办理", type: "warn" }] },
+              { subtype: "流程环节", name: "复查复审", meta: ["办理岗位：核查人B", "办理内容：复核整改材料初审意见", "办理状态：待办理"], badges: [{ text: "待办理", type: "warn" }] },
+              { subtype: "流程环节", name: "复查结论", meta: ["办理岗位：核查人A", "办理内容：形成整改复查结论并完成送达", "办理状态：待办理"], badges: [{ text: "待办理", type: "warn" }] }
+            ]
+          }
+        ]
+      },
       {
         id: "personnel",
         name: "人员核查",
@@ -3850,13 +4046,13 @@
             source: "enterprise",
             type: "grid",
             items: [
-              ["委托单位名称", "企业端提交值"],
-              ["统一社会信用代码", "企业端提交值"],
-              ["邮寄送达地址", "企业端提交值"],
-              ["邮寄送达地址邮编", "企业端提交值"],
-              ["法定代表人姓名", "企业端提交值"],
-              ["法定代表人身份证号", "企业端提交值"],
-              ["法定代表人电话", "企业端提交值"]
+              ["委托单位（企业）", "北京华建市政工程有限公司"],
+              ["统一社会信用代码", "91110108MA01A6XJ7Q"],
+              ["文书送达地址", "北京市海淀区西四环北路136号院2号楼8层801室"],
+              ["文书送达地址邮政编码", "100195"],
+              ["法定代表人姓名", "赵明远"],
+              ["法定代表人身份证号", "110108********3816"],
+              ["法定代表人电话", "139****2684"]
             ]
           },
           {
@@ -3865,10 +4061,10 @@
             source: "enterprise",
             type: "grid",
             items: [
-              ["委托经办人员姓名", "企业端提交值"],
-              ["委托经办人员电话", "企业端提交值"],
-              ["委托经办人员职务", "企业端提交值"],
-              ["委托经办人员身份证号", "企业端提交值"]
+              ["受委托办理人员姓名", "刘晓敏"],
+              ["受委托办理人员电话", "136****5172"],
+              ["受委托办理人员工作单位", "北京华建市政工程有限公司"],
+              ["受委托办理人员身份证号", "110108********7429"]
             ]
           }
         ],
@@ -3938,6 +4134,7 @@
     const state = {
       activeModuleId: "personnel",
       activeSubtype: "注册建造师",
+      navigationExpanded: { "核查信息": true, "核查进度": false },
       search: "",
       selectedMajors: [],
       majorKeyword: "",
@@ -3947,6 +4144,8 @@
       previewData: null,
       cardSelection: {},
       cardConclusion: {},
+      reviewStageRecords: {},
+      reviewStageAttachments: { 复审: [] },
       reviewAttachments: [
         { id: "review-image-1", name: "问题截图.png", kind: "image", sizeText: "1.8 MB", url: "" },
         { id: "review-image-2", name: "现场照片.jpg", kind: "image", sizeText: "2.0 MB", url: "" },
@@ -3979,6 +4178,7 @@
       searchButton: document.getElementById("searchButton"),
       contentBody: document.getElementById("contentBody"),
       detailBody: document.getElementById("detailBody"),
+      workspace: document.querySelector(".workspace"),
       detailHeadText: document.querySelector(".detail-panel .panel-head p"),
       previewModal: document.getElementById("previewModal"),
       previewTitle: document.getElementById("previewTitle"),
@@ -4516,7 +4716,9 @@
     }
 
     function getDefaultSubtype(module) {
-      return module.id === "personnel" ? module.subtypes[0] : "\u5168\u90e8";
+      if (module.id === "personnel") return module.subtypes[0];
+      if (module.id === "review-process") return module.navStages[0];
+      return "\u5168\u90e8";
     }
 
     function getToolbarSubtypeOptions(module) {
@@ -4650,6 +4852,7 @@
     }
 
     function getFilteredSections(module) {
+      if (module.id === "review-process") return module.sections;
       const keyword = state.search.trim().toLowerCase();
       const selectedMajors = isBuilderModuleView(module) ? state.selectedMajors : [];
       if (!keyword && !selectedMajors.length) return module.sections;
@@ -4683,14 +4886,16 @@
       const equipmentEnabled = getModule()?.id === "equipment";
       const achievementEnabled = getModule()?.id === "achievement";
       const attachmentEnabled = getModule()?.id === "attachment";
+      const entrustedAgentEnabled = getModule()?.id === "entrusted-agent";
       elements.majorFilterWrap.hidden = !enabled;
       elements.toolbarSearch.classList.toggle("builder-search", enabled);
       elements.toolbarSearch.classList.toggle("leader-search", leaderEnabled);
       elements.toolbarSearch.classList.toggle("equipment-search", equipmentEnabled);
       elements.toolbarSearch.classList.toggle("achievement-search", achievementEnabled);
       elements.toolbarSearch.classList.toggle("attachment-search", attachmentEnabled);
-      elements.searchInput.hidden = enabled;
-      elements.searchButton.hidden = false;
+      elements.toolbarSearch.classList.toggle("entrusted-agent-search", entrustedAgentEnabled);
+      elements.searchInput.hidden = enabled || entrustedAgentEnabled;
+      elements.searchButton.hidden = enabled || entrustedAgentEnabled;
       if (enabled && state.search) {
         state.search = "";
         elements.searchInput.value = "";
@@ -4917,15 +5122,23 @@
       return /\.(jpg|png)$/i.test(fileName) ? "image" : "pdf";
     }
 
-    function renderReviewAttachments() {
+    function getReviewAttachments(stage = "") {
+      if (stage === "初审") return state.reviewAttachments;
+      if (stage) return state.reviewStageAttachments[stage] || [];
+      return state.reviewAttachments;
+    }
+
+    function renderReviewAttachments(stage = "") {
+      const attachments = getReviewAttachments(stage);
       return `
         <div class="upload-file-list">
-          ${state.reviewAttachments.map((attachment) => `
+          ${attachments.map((attachment) => `
             <div class="upload-file-item">
               <button
                 class="upload-file-icon ${attachment.kind}"
                 type="button"
                 data-review-attachment-action="preview"
+                data-review-stage="${stage}"
                 data-review-attachment-id="${attachment.id}"
                 title="${attachment.name}，${attachment.sizeText}"
                 aria-label="预览${attachment.name}"
@@ -4934,6 +5147,7 @@
                 class="upload-file-delete"
                 type="button"
                 data-review-attachment-action="delete"
+                data-review-stage="${stage}"
                 data-review-attachment-id="${attachment.id}"
                 title="删除${attachment.name}"
                 aria-label="删除${attachment.name}"
@@ -4958,6 +5172,91 @@
     }
 
     function renderConclusionSection(module) {
+      if (module.id === "review-process" && state.activeSubtype === "初审") {
+        const record = state.reviewStageRecords.初审 || {};
+        return `
+          <section class="status-card">
+            <div class="conclusion-head">
+              <h4>初审办理</h4>
+              <span class="badge ${record.time ? "ok" : "warn"}">${record.time ? "已提交" : record.result ? "已填写" : "待提交"}</span>
+            </div>
+            <div class="form-field">
+              <label>初审结果 <span class="required">*</span></label>
+              <div class="review-result-options">
+                <label class="review-result-option">
+                  <input type="radio" name="initialReviewResult" value="pass" ${record.result === "pass" ? "checked" : ""}>
+                  <span>经查符合相关资质标准</span>
+                </label>
+                <label class="review-result-option">
+                  <input type="radio" name="initialReviewResult" value="fail" ${record.result === "fail" ? "checked" : ""}>
+                  <span>经查不符合相关资质标准</span>
+                </label>
+              </div>
+            </div>
+            <div class="form-field">
+              <label for="reviewOpinion">初审结论意见 <span class="required">*</span></label>
+              <textarea id="reviewOpinion" class="opinion-textarea" placeholder="填写本次初审意见">${record.opinion || ""}</textarea>
+            </div>
+            <div class="upload-zone">
+              <strong>初审结论附件</strong>
+              ${renderReviewAttachments("初审")}
+              <input id="reviewAttachmentInput" data-review-stage="初审" type="file" accept=".jpg,.png,.pdf" multiple hidden>
+              <p class="upload-hint">支持 JPG、PNG、PDF，单个文件不超过 20 MB。</p>
+              <div class="upload-actions">
+                <button class="badge primary" type="button" id="reviewAttachmentUpload">上传附件</button>
+              </div>
+            </div>
+            <div class="review-meta"><span>初审人</span><strong>${record.reviewer || "李进"}</strong></div>
+            <div class="review-meta"><span>初审时间</span><strong>${record.time || "待提交"}</strong></div>
+            <div class="upload-actions">
+              <button class="search-button" type="button" onclick="saveReviewConclusion()">保存初审</button>
+            </div>
+          </section>
+        `;
+      }
+      if (module.id === "review-process" && state.activeSubtype === "复审") {
+        const record = state.reviewStageRecords.复审 || {};
+        return `
+          <section class="status-card">
+            <div class="conclusion-head">
+              <h4>复审办理</h4>
+              <span class="badge ${record.time ? "ok" : "warn"}">${record.time ? "已提交" : record.result ? "已填写" : "待提交"}</span>
+            </div>
+            <div class="form-field">
+              <label>复审意见 <span class="required">*</span></label>
+              <div class="review-result-options">
+                <label class="review-result-option">
+                  <input type="radio" name="reviewDecision" value="agree" ${record.result === "agree" ? "checked" : ""}>
+                  <span>同意初审办理意见</span>
+                </label>
+                <label class="review-result-option">
+                  <input type="radio" name="reviewDecision" value="return" ${record.result === "return" ? "checked" : ""}>
+                  <span>退回初审重新办理</span>
+                </label>
+              </div>
+            </div>
+            <div class="form-field">
+              <label for="reviewOpinion">复审结论意见 <span class="required">*</span></label>
+              <textarea id="reviewOpinion" class="opinion-textarea" placeholder="填写复审结论意见">${record.opinion || ""}</textarea>
+            </div>
+            <div class="upload-zone">
+              <strong>复审结论附件</strong>
+              ${renderReviewAttachments("复审")}
+              <input id="reviewAttachmentInput" data-review-stage="复审" type="file" accept=".jpg,.png,.pdf" multiple hidden>
+              <p class="upload-hint">支持 JPG、PNG、PDF，单个文件不超过 20 MB。</p>
+              <div class="upload-actions">
+                <button class="badge primary" type="button" id="reviewAttachmentUpload">上传附件</button>
+              </div>
+            </div>
+            <div class="review-meta"><span>复审人</span><strong>${record.reviewer || "--"}</strong></div>
+            <div class="review-meta"><span>复审时间</span><strong>${record.time || "待提交"}</strong></div>
+            <div class="upload-actions">
+              <button class="search-button" type="button" onclick="saveReviewConclusion()">保存复审</button>
+            </div>
+          </section>
+        `;
+      }
+
       const groupName = `conclusion-${module.id}-${state.activeSubtype}`;
       const selectedCard = getSelectedCard(module);
       const selectedCardName = getSelectedCardDisplayName(module, selectedCard);
@@ -5076,28 +5375,37 @@
       const equipmentCount = equipmentModule?.sections?.flatMap((section) => section.cards || []).length || 0;
       const achievementCount = achievementModule?.sections?.flatMap((section) => section.cards || []).length || 0;
       const entrustedModule = modules.find((module) => module.id === "entrusted-agent");
+      const initialReviewRecord = state.reviewStageRecords.初审 || {};
+      const secondReviewRecord = state.reviewStageRecords.复审 || {};
 
       return [
         {
-          title: "核查资料",
-          desc: "归集人员、设备、业绩核查对象，优先处理资质、证书、设备、业绩和社保等资料。",
-          count: "6项",
+          title: "核查信息",
+          desc: "集中查看人员、设备、业绩、核查附件及委托经办人信息。",
+          count: "9项",
           items: [
             { moduleId: "personnel", subtype: "注册建造师", title: "注册建造师", note: `${builderCount}人` },
             { moduleId: "personnel", subtype: "技术负责人", title: "技术负责人", note: `${leaderCount}人` },
             { moduleId: "personnel", subtype: "职称人员", title: "职称人员", note: `${titlePersonCount}人` },
             { moduleId: "personnel", subtype: "技术工人", title: "技术工人", note: `${workerCount}人` },
             { moduleId: "equipment", title: "企业设备", note: `${equipmentCount}项` },
-            { moduleId: "achievement", title: "企业业绩", note: `${achievementCount}项` }
+            { moduleId: "achievement", title: "企业业绩", note: `${achievementCount}项` },
+            { moduleId: "attachment", title: "核查附件", note: "集中查看" },
+            { moduleId: "entrusted-agent", title: "委托经办人", note: entrustedModule?.totals.objects || "2组" }
           ]
         },
         {
-          title: "核查附件",
-          desc: "集中查看企业公共附件，避免在主资料和附件之间来回切换。",
-          count: "1项",
+          title: "核查进度",
+          desc: "汇总各项核查内容形成的结论，并记录初审、复审、责改及复查环节的整体办理进度和综合意见。",
+          count: "7项",
           items: [
-            { moduleId: "attachment", title: "核查附件", note: "集中查看" },
-            { moduleId: "entrusted-agent", title: "委托经办人", note: entrustedModule?.totals.objects || "2组" }
+            { moduleId: "review-process", subtype: "初审", title: "初审", note: initialReviewRecord.time ? "已提交" : "待办理" },
+            { moduleId: "review-process", subtype: "复审", title: "复审", note: secondReviewRecord.time ? "已提交" : "待办理" },
+            { moduleId: "review-process", subtype: "核查结论", title: "核查结论", note: "待办理" },
+            { moduleId: "review-process", subtype: "责改", title: "责改", note: "待办理" },
+            { moduleId: "review-process", subtype: "复查初审", title: "复查初审", note: "待办理" },
+            { moduleId: "review-process", subtype: "复查复审", title: "复查复审", note: "待办理" },
+            { moduleId: "review-process", subtype: "复查结论", title: "复查结论", note: "待办理" }
           ]
         }
       ];
@@ -5123,11 +5431,14 @@
 
     function renderModuleListV2() {
       elements.moduleList.innerHTML = getNavigationGroups().map((group) => `
-        <section class="module-group-card">
-          <div class="module-group-head">
+        <section class="module-group-card ${state.navigationExpanded[group.title] ? "" : "collapsed"}">
+          <button class="module-group-head" type="button" data-group-title="${group.title}" aria-expanded="${!!state.navigationExpanded[group.title]}">
             <strong>${group.title}</strong>
-            <span class="badge primary">${group.count}</span>
-          </div>
+            <span class="module-group-toggle" aria-hidden="true">
+              <svg viewBox="0 0 20 20" width="16" height="16" fill="none"><path d="m5 7.5 5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </span>
+          </button>
+          <span class="badge primary">${group.count}</span>
           <p>${group.desc}</p>
           <div class="module-group-list">
             ${group.items.map((item) => `
@@ -5143,10 +5454,27 @@
       `).join("");
     }
 
+    elements.moduleList.addEventListener("click", (event) => {
+      const groupToggle = event.target.closest(".module-group-head");
+      if (!groupToggle) return;
+      const group = groupToggle.closest(".module-group-card");
+      const collapsed = group.classList.toggle("collapsed");
+      state.navigationExpanded[groupToggle.dataset.groupTitle] = !collapsed;
+      groupToggle.setAttribute("aria-expanded", String(!collapsed));
+    });
+
     function renderSubtypeFilters(module) {
       const options = getToolbarSubtypeOptions(module);
-      if (!(module.id === "personnel" ? module.subtypes : options).includes(state.activeSubtype)) {
+      const validSubtype = module.id === "review-process"
+        ? module.navStages.includes(state.activeSubtype)
+        : (module.id === "personnel" ? module.subtypes : options).includes(state.activeSubtype);
+      if (!validSubtype) {
         state.activeSubtype = getDefaultSubtype(module);
+      }
+
+      if (module.id === "review-process") {
+        elements.subTypeFilters.innerHTML = "";
+        return;
       }
 
       if (module.id === "equipment" || module.id === "achievement" || module.id === "entrusted-agent") {
@@ -5935,6 +6263,90 @@
     }
 
     function renderSections(module) {
+      if (module.id === "review-process") {
+        const activeStage = module.sections[0].cards.find((card) => card.name === state.activeSubtype);
+        if (!activeStage) return "";
+        if (activeStage.name === "初审") {
+          const initialRecord = state.reviewStageRecords.初审 || {};
+          const initialStatus = initialRecord.time ? "已提交" : "待办理";
+          return `
+            <section class="review-workbench">
+              <div class="review-workbench-head">
+                <div><h3>初审工作台</h3><p>核对本次企业资质动态核查资料，并汇总各核查项目的结论。</p></div>
+                <span class="badge ${initialRecord.time ? "ok" : "warn"}">${initialStatus}</span>
+              </div>
+              <div class="review-summary-grid">
+                <div class="review-summary-item"><span>核查企业</span><strong>${enterpriseProfile.name}</strong></div>
+                <div class="review-summary-item"><span>统一社会信用代码</span><strong>${enterpriseProfile.code}</strong></div>
+                <div class="review-summary-item"><span>核查资质</span><strong>${enterpriseProfile.qualification}</strong></div>
+                <div class="review-summary-item"><span>核查批次</span><strong>${enterpriseProfile.batch}</strong></div>
+              </div>
+              <div class="review-stage-summary">
+                <div class="review-stage-summary-head">
+                  <div><h3>初审办理说明</h3><p>确认各项核查资料及对应结论后，再形成整体初审意见。</p></div>
+                  <span class="badge ${initialRecord.time ? "ok" : "warn"}">${initialStatus}</span>
+                </div>
+                <div class="info-grid">
+                  <div class="info-item"><span>办理岗位</span><strong>核查人A</strong></div>
+                  <div class="info-item"><span>办理内容</span><strong>核对企业提交的核查资料</strong></div>
+                  <div class="info-item"><span>当前状态</span><strong>${initialRecord.time ? "初审结论已提交" : "待提交初审结论"}</strong></div>
+                  <div class="info-item"><span>办理要求</span><strong>结合各项核查结论填写综合意见</strong></div>
+                </div>
+              </div>
+            </section>
+          `;
+        }
+        if (activeStage.name === "复审") {
+          const initialRecord = state.reviewStageRecords.初审 || {};
+          const reviewRecord = state.reviewStageRecords.复审 || {};
+          const reviewStatus = reviewRecord.time ? "已提交" : "待办理";
+          const initialResultText = initialRecord.result === "pass"
+            ? "经查符合相关资质标准"
+            : initialRecord.result === "fail"
+              ? "经查不符合相关资质标准"
+              : "初审结果待补充";
+          return `
+            <section class="review-workbench">
+              <div class="review-workbench-head">
+                <div><h3>复审工作台</h3><p>复核初审办理意见及核查依据，形成复审意见。</p></div>
+                <span class="badge ${reviewRecord.time ? "ok" : "warn"}">${reviewStatus}</span>
+              </div>
+              <div class="review-summary-grid">
+                <div class="review-summary-item"><span>核查企业</span><strong>${enterpriseProfile.name}</strong></div>
+                <div class="review-summary-item"><span>统一社会信用代码</span><strong>${enterpriseProfile.code}</strong></div>
+                <div class="review-summary-item"><span>核查资质</span><strong>${enterpriseProfile.qualification}</strong></div>
+                <div class="review-summary-item"><span>核查批次</span><strong>${enterpriseProfile.batch}</strong></div>
+              </div>
+              <div class="review-stage-summary">
+                <div class="review-stage-summary-head">
+                  <div><h3>初审意见复核</h3><p>核对初审结果、意见及对应核查依据。</p></div>
+                  <span class="badge primary">初审记录</span>
+                </div>
+                <div class="info-grid">
+                  <div class="info-item"><span>初审结果</span><strong>${initialResultText}</strong></div>
+                  <div class="info-item"><span>初审意见</span><strong>${initialRecord.opinion || "暂无已保存的初审意见"}</strong></div>
+                  <div class="info-item"><span>初审人</span><strong>${initialRecord.reviewer || "--"}</strong></div>
+                  <div class="info-item"><span>初审时间</span><strong>${initialRecord.time || "--"}</strong></div>
+                </div>
+              </div>
+            </section>
+          `;
+        }
+        return `
+          <section class="section-card">
+            <div class="section-head">
+              <div><h3>${activeStage.name}</h3><p>核查流程办理环节</p></div>
+              <span class="badge warn">待办理</span>
+            </div>
+            <div class="section-body">
+              <div class="info-grid">${activeStage.meta.map((item) => {
+                const [label, ...value] = item.split("：");
+                return `<div class="info-item"><span>${label}</span><strong>${value.join("：")}</strong></div>`;
+              }).join("")}</div>
+            </div>
+          </section>
+        `;
+      }
       const sections = getFilteredSections(module);
       if (!sections.length) {
         return `
@@ -5962,11 +6374,13 @@
       ensureSelectedCard(module);
       const primaryCardsSection = module.sections?.find((section) => section.type === "cards");
       const hideHead = false;
-      const title = module.id === "personnel" && primaryCardsSection
-        ? `${state.activeSubtype}综合列表`
-        : (module.id === "equipment" || module.id === "achievement") && primaryCardsSection
-          ? primaryCardsSection.title
-          : module.name;
+      const title = module.id === "review-process"
+        ? `${state.activeSubtype}工作台`
+        : module.id === "personnel" && primaryCardsSection
+          ? `${state.activeSubtype}综合列表`
+          : (module.id === "equipment" || module.id === "achievement") && primaryCardsSection
+            ? primaryCardsSection.title
+            : module.name;
       let desc = module.id === "personnel" || module.id === "equipment" || module.id === "achievement"
         ? (primaryCardsSection?.desc || "")
         : module.desc;
@@ -5984,7 +6398,17 @@
 
     function renderDetail() {
       const module = getModule();
-      renderDetailHeadText(module);
+      const detailTitle = document.getElementById("detailTitle");
+      elements.workspace.classList.toggle("review-process-view", module.id === "review-process");
+      if (module.id === "review-process" && ["初审", "复审"].includes(state.activeSubtype)) {
+        detailTitle.textContent = `${state.activeSubtype}办理`;
+        elements.detailHeadText.textContent = state.activeSubtype === "初审"
+          ? "填写初审结果、结论意见并上传相关附件。"
+          : "复核初审办理意见，填写复审意见及结论，并上传相关附件。";
+      } else {
+        detailTitle.textContent = "核查标准";
+        renderDetailHeadText(module);
+      }
       elements.detailBody.innerHTML = renderConclusionSection(module);
     }
 
@@ -5992,6 +6416,7 @@
       renderHeroSummary();
       renderQualificationBoard();
       renderModuleListV2();
+      elements.workspace.classList.toggle("entrusted-agent-view", state.activeModuleId === "entrusted-agent");
       renderContent();
       renderDetail();
       elements.contentBody.scrollTop = 0;
@@ -6004,6 +6429,9 @@
       if (!button) return;
       const nextModule = modules.find((module) => module.id === button.dataset.moduleId);
       if (!nextModule) return;
+      if (button.dataset.moduleId === "review-process") {
+        state.navigationExpanded["核查进度"] = true;
+      }
       state.activeModuleId = button.dataset.moduleId;
       state.activeSubtype = button.dataset.moduleSubtype || getDefaultSubtype(nextModule);
       state.search = "";
@@ -6148,13 +6576,15 @@
         const acceptedExtensions = /\.(jpg|png|pdf)$/i;
         const maxFileSize = 20 * 1024 * 1024;
         const rejectedFiles = [];
+        const reviewStage = attachmentInput.dataset.reviewStage || "";
+        const targetAttachments = getReviewAttachments(reviewStage);
 
         Array.from(attachmentInput.files || []).forEach((file) => {
           if (!acceptedExtensions.test(file.name) || file.size > maxFileSize) {
             rejectedFiles.push(file.name);
             return;
           }
-          state.reviewAttachments.push({
+          targetAttachments.push({
             id: `review-${Date.now()}-${Math.random().toString(36).slice(2)}`,
             name: file.name,
             kind: getReviewAttachmentKind(file.name),
@@ -6162,11 +6592,42 @@
             url: URL.createObjectURL(file)
           });
         });
+        if (reviewStage && reviewStage !== "初审") {
+          state.reviewStageAttachments[reviewStage] = targetAttachments;
+        }
 
         if (rejectedFiles.length) {
           window.alert(`以下文件格式不支持或超过20 MB：${rejectedFiles.join("、")}`);
         }
         renderDetail();
+        return;
+      }
+
+      const initialResult = event.target.closest('input[name="initialReviewResult"]');
+      if (initialResult) {
+        state.reviewStageRecords.初审 = {
+          ...(state.reviewStageRecords.初审 || {}),
+          result: initialResult.value
+        };
+        const badge = elements.detailBody.querySelector(".conclusion-head .badge");
+        if (badge) {
+          badge.textContent = "已填写";
+          badge.className = "badge ok";
+        }
+        return;
+      }
+
+      const reviewDecision = event.target.closest('input[name="reviewDecision"]');
+      if (reviewDecision) {
+        state.reviewStageRecords.复审 = {
+          ...(state.reviewStageRecords.复审 || {}),
+          result: reviewDecision.value
+        };
+        const badge = elements.detailBody.querySelector(".conclusion-head .badge");
+        if (badge) {
+          badge.textContent = "已填写";
+          badge.className = "badge warn";
+        }
         return;
       }
 
@@ -6190,12 +6651,19 @@
 
       const attachmentButton = event.target.closest("[data-review-attachment-action]");
       if (!attachmentButton) return;
-      const attachment = state.reviewAttachments.find((item) => item.id === attachmentButton.dataset.reviewAttachmentId);
+      const reviewStage = attachmentButton.dataset.reviewStage || "";
+      const attachments = getReviewAttachments(reviewStage);
+      const attachment = attachments.find((item) => item.id === attachmentButton.dataset.reviewAttachmentId);
       if (!attachment) return;
 
       if (attachmentButton.dataset.reviewAttachmentAction === "delete") {
         if (attachment.url) URL.revokeObjectURL(attachment.url);
-        state.reviewAttachments = state.reviewAttachments.filter((item) => item.id !== attachment.id);
+        const remaining = attachments.filter((item) => item.id !== attachment.id);
+        if (reviewStage && reviewStage !== "初审") {
+          state.reviewStageAttachments[reviewStage] = remaining;
+        } else if (reviewStage === "初审" || !reviewStage) {
+          state.reviewAttachments = remaining;
+        }
         renderDetail();
         return;
       }
@@ -6278,6 +6746,55 @@
     }
 
     function saveReviewConclusion() {
+      if (state.activeModuleId === "review-process" && state.activeSubtype === "初审") {
+        const result = elements.detailBody.querySelector('input[name="initialReviewResult"]:checked');
+        const opinion = elements.detailBody.querySelector("#reviewOpinion");
+        if (!result) {
+          window.alert("请选择初审结果。");
+          return;
+        }
+        if (!opinion?.value.trim()) {
+          window.alert("请填写初审结论意见。");
+          opinion?.focus();
+          return;
+        }
+        state.reviewStageRecords.初审 = {
+          ...(state.reviewStageRecords.初审 || {}),
+          result: result.value,
+          opinion: opinion.value.trim(),
+          reviewer: "李进",
+          time: new Date().toLocaleString("zh-CN", { hour12: false })
+        };
+        renderContent();
+        renderDetail();
+        window.alert("初审结论已保存。");
+        return;
+      }
+      if (state.activeModuleId === "review-process" && state.activeSubtype === "复审") {
+        const decision = elements.detailBody.querySelector('input[name="reviewDecision"]:checked');
+        const opinion = elements.detailBody.querySelector("#reviewOpinion");
+        if (!decision) {
+          window.alert("请选择复审意见。");
+          return;
+        }
+        if (!opinion?.value.trim()) {
+          window.alert("请填写复审结论意见。");
+          opinion?.focus();
+          return;
+        }
+        state.reviewStageRecords.复审 = {
+          ...(state.reviewStageRecords.复审 || {}),
+          result: decision.value,
+          opinion: opinion.value.trim(),
+          reviewer: "核查人B",
+          time: new Date().toLocaleString("zh-CN", { hour12: false })
+        };
+        renderModuleListV2();
+        renderContent();
+        renderDetail();
+        window.alert("复审意见已保存。");
+        return;
+      }
       window.alert("核查结论已保存。");
     }
 
