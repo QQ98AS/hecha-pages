@@ -448,14 +448,6 @@
       display: none;
     }
 
-    .workspace.entrusted-agent-view .toolbar-search {
-      display: none;
-    }
-
-    .workspace.entrusted-agent-view .toolbar {
-      display: none;
-    }
-
     .workspace.review-process-view {
       grid-template-columns: 260px minmax(0, 1fr) 400px;
     }
@@ -833,14 +825,15 @@
 
     .toolbar-search.entrusted-agent-search {
       display: flex;
-      justify-content: flex-end;
+      justify-content: stretch;
       align-items: center;
       min-height: 40px;
     }
 
     .toolbar-search.entrusted-agent-search .search-button {
-      flex: 0 0 auto;
-      margin-left: auto;
+      flex: 1 1 100%;
+      width: 100%;
+      margin-left: 0;
       white-space: nowrap;
     }
 
@@ -4895,7 +4888,7 @@
       elements.toolbarSearch.classList.toggle("attachment-search", attachmentEnabled);
       elements.toolbarSearch.classList.toggle("entrusted-agent-search", entrustedAgentEnabled);
       elements.searchInput.hidden = enabled || entrustedAgentEnabled;
-      elements.searchButton.hidden = enabled || entrustedAgentEnabled;
+      elements.searchButton.hidden = enabled;
       if (enabled && state.search) {
         state.search = "";
         elements.searchInput.value = "";
