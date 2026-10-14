@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
@@ -4516,26 +4516,26 @@
         ).replace(/^(注册证书附件：|附件材料：|岗位证书附件：|设备发票附件：|参数佐证附件：)/, "").split(/[,，]/)[0].trim(),
         ...(module.id === "attachment" && card.subtype === "授权委托书" && actionType === "preview-pdf"
           ? {
-              attachmentFileName: "出门条(2).pdf",
-              attachmentUrl: "./出门条(2).pdf",
+              attachmentFileName: "exit-slip-2.pdf",
+              attachmentUrl: "./assets/exit-slip-2.pdf",
               attachmentKind: "pdf"
             }
           : module.id === "attachment" && ["营业执照", "安许证", "法人身份证复印件", "授权委托书"].includes(card.subtype)
           ? {
               attachmentFileName: card.subtype === "营业执照"
-                ? "营业执照.png"
+                ? "business-license.png"
                 : card.subtype === "安许证"
-                  ? "安全生产许可证.png"
+                  ? "safety-permit.png"
                   : card.subtype === "法人身份证复印件"
-                    ? (actionType === "preview-back" ? "法人身份证反面.png" : "法人身份证.png")
-                    : "授权委托书.png",
+                    ? (actionType === "preview-back" ? "legal-id-back.png" : "legal-id-front.png")
+                    : "authorization-letter.png",
               attachmentUrl: card.subtype === "营业执照"
-                ? "./营业执照.png"
+                ? "./assets/business-license.png"
                 : card.subtype === "安许证"
-                  ? "./安全生产许可证.png"
+                  ? "./assets/safety-permit.png"
                   : card.subtype === "法人身份证复印件"
-                    ? (actionType === "preview-back" ? "./法人身份证反面.png" : "./法人身份证.png")
-                    : "./授权委托书.png",
+                    ? (actionType === "preview-back" ? "./assets/legal-id-back.png" : "./assets/legal-id-front.png")
+                    : "./assets/authorization-letter.png",
               attachmentKind: "image"
             }
           : {}),
@@ -6346,12 +6346,12 @@
                     : card.meta;
                   const isImageAttachmentCard = module.id === "attachment" && ["营业执照", "安许证", "法人身份证复印件", "授权委托书"].includes(card.subtype);
                   const attachmentImage = card.subtype === "营业执照"
-                    ? "营业执照.png"
+                    ? "assets/business-license.png"
                     : card.subtype === "安许证"
-                      ? "安全生产许可证.png"
+                      ? "assets/safety-permit.png"
                       : card.subtype === "法人身份证复印件"
-                        ? "法人身份证.png"
-                        : "授权委托书.png";
+                        ? "assets/legal-id-front.png"
+                        : "assets/authorization-letter.png";
                   const isAuthorizedAgentIdCard = module.id === "attachment" && card.subtype === "授权委托人身份证";
                   const metaBadges = isBuilderCard
                     ? []
@@ -6416,19 +6416,19 @@
                       ${card.subtype === "法人身份证复印件" && isImageAttachmentCard ? `
                         <div class="legal-id-thumbnails">
                           <button class="business-license-thumbnail" type="button" data-action-type="preview" aria-label="预览法人身份证正面">
-                            <img src="./法人身份证.png" alt="法人身份证正面缩略图">
+                            <img src="./assets/legal-id-front.png" alt="法人身份证正面缩略图">
                           </button>
                           <button class="business-license-thumbnail" type="button" data-action-type="preview-back" aria-label="预览法人身份证反面">
-                            <img src="./法人身份证反面.png" alt="法人身份证反面缩略图">
+                            <img src="./assets/legal-id-back.png" alt="法人身份证反面缩略图">
                           </button>
                         </div>
                       ` : card.subtype === "授权委托书" ? `
                         <div class="authorization-thumbnails">
                           <button class="business-license-thumbnail" type="button" data-action-type="preview" aria-label="预览授权委托书图片">
-                            <img src="./授权委托书.png" alt="授权委托书图片缩略图">
+                            <img src="./assets/authorization-letter.png" alt="授权委托书图片缩略图">
                           </button>
                           <button class="authorization-pdf-thumbnail" type="button" data-action-type="preview-pdf" aria-label="预览出门条 PDF">
-                            <img src="./授权委托书PDF首页.png" alt="出门条 PDF 首页缩略图">
+                            <img src="./assets/authorization-pdf-cover.png" alt="出门条 PDF 首页缩略图">
                           </button>
                         </div>
                       ` : isImageAttachmentCard ? `
@@ -6999,3 +6999,4 @@
   </script>
 </body>
 </html>
+
