@@ -2129,7 +2129,14 @@
     }
 
     .attachment-grid {
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      display: grid;
+      grid-template-columns: repeat(3, max-content);
+      align-items: start;
+      justify-content: start;
+    }
+
+    .attachment-grid > .entity-card {
+      min-width: 0;
     }
 
     .entity-card {
@@ -2361,12 +2368,6 @@
       padding-bottom: 16px;
     }
 
-    .entity-card.attachment-card .entity-actions {
-      position: static;
-      margin-left: auto;
-      align-self: start;
-    }
-
     .entity-card.attachment-card .entity-top {
       align-items: center;
     }
@@ -2377,6 +2378,141 @@
 
     .entity-card.attachment-card .entity-attachment-tools {
       display: none;
+    }
+
+    .business-license-thumbnail {
+      display: block;
+      width: min(100%, 150px);
+      aspect-ratio: 468 / 664;
+      padding: 0;
+      overflow: hidden;
+      border: 1px solid rgba(91, 67, 43, 0.14);
+      border-radius: 5px;
+      background: #fffdf3;
+      box-shadow: 0 3px 10px rgba(58, 41, 25, 0.12);
+      cursor: zoom-in;
+    }
+
+    .business-license-thumbnail img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .entity-card.safety-permit-card,
+    .entity-card.legal-id-card {
+      align-self: start;
+      min-height: 0;
+      padding-bottom: 12px;
+    }
+
+    .entity-card.image-attachment-card {
+      justify-self: start;
+      min-height: 0;
+      padding-bottom: 12px;
+    }
+
+    .image-attachment-card .entity-top {
+      display: flex;
+      width: fit-content;
+      justify-content: flex-start;
+      gap: 8px;
+    }
+
+    .authorization-card .entity-top {
+      width: fit-content;
+    }
+
+    .authorization-card {
+      justify-self: start;
+      max-width: 100%;
+    }
+
+    .image-attachment-card .entity-top > h4,
+    .no-attachment-card .entity-top > h4 {
+      flex: 0 0 auto;
+    }
+
+    .image-attachment-card .entity-result-badge,
+    .no-attachment-card .entity-result-badge {
+      justify-self: auto;
+      margin-left: 0;
+    }
+
+    .no-attachment-card .entity-top {
+      display: flex;
+      width: fit-content;
+      justify-content: flex-start;
+      gap: 8px;
+    }
+
+    .image-attachment-card .entity-head-actions {
+      display: none;
+    }
+
+    .safety-permit-card .business-license-thumbnail {
+      width: min(100%, 190px);
+      aspect-ratio: 618 / 424;
+    }
+
+    .safety-permit-card .business-license-thumbnail img {
+      object-fit: contain;
+    }
+
+    .legal-id-card .business-license-thumbnail {
+      width: min(100%, 190px);
+      aspect-ratio: 672 / 432;
+    }
+
+    .legal-id-thumbnails {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .legal-id-thumbnails .business-license-thumbnail {
+      width: min(100%, 156px);
+      flex: 0 1 156px;
+    }
+
+    .authorization-thumbnails {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+
+    .authorization-thumbnails .business-license-thumbnail {
+      width: min(100%, 156px);
+      flex: 0 1 156px;
+    }
+
+    .authorization-pdf-thumbnail {
+      display: block;
+    }
+
+    .authorization-pdf-thumbnail {
+      width: min(100%, 156px);
+      flex: 0 1 156px;
+      aspect-ratio: 468 / 664;
+      padding: 0;
+      overflow: hidden;
+      border: 1px solid rgba(91, 67, 43, 0.14);
+      border-radius: 5px;
+      background: #fff;
+      box-shadow: 0 3px 10px rgba(58, 41, 25, 0.12);
+      cursor: zoom-in;
+    }
+
+    .authorization-pdf-thumbnail img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .legal-id-card .business-license-thumbnail img {
+      object-fit: contain;
     }
 
     .preview-modal {
@@ -4378,6 +4514,31 @@
           card.meta.find((item) => item.startsWith("参数佐证附件：")) ||
           ""
         ).replace(/^(注册证书附件：|附件材料：|岗位证书附件：|设备发票附件：|参数佐证附件：)/, "").split(/[,，]/)[0].trim(),
+        ...(module.id === "attachment" && card.subtype === "授权委托书" && actionType === "preview-pdf"
+          ? {
+              attachmentFileName: "出门条(2).pdf",
+              attachmentUrl: "./出门条(2).pdf",
+              attachmentKind: "pdf"
+            }
+          : module.id === "attachment" && ["营业执照", "安许证", "法人身份证复印件", "授权委托书"].includes(card.subtype)
+          ? {
+              attachmentFileName: card.subtype === "营业执照"
+                ? "营业执照.png"
+                : card.subtype === "安许证"
+                  ? "安全生产许可证.png"
+                  : card.subtype === "法人身份证复印件"
+                    ? (actionType === "preview-back" ? "法人身份证反面.png" : "法人身份证.png")
+                    : "授权委托书.png",
+              attachmentUrl: card.subtype === "营业执照"
+                ? "./营业执照.png"
+                : card.subtype === "安许证"
+                  ? "./安全生产许可证.png"
+                  : card.subtype === "法人身份证复印件"
+                    ? (actionType === "preview-back" ? "./法人身份证反面.png" : "./法人身份证.png")
+                    : "./授权委托书.png",
+              attachmentKind: "image"
+            }
+          : {}),
         actionType
       };
       renderPreviewModal();
@@ -5781,7 +5942,7 @@
               <h3>${section.title}</h3>
               <p>${section.desc}</p>
             </div>
-            <span class="badge primary">目录卡片</span>
+            ${module.id === "attachment" ? "" : '<span class="badge primary">目录卡片</span>'}
           </div>
           ` : ""}
           <div class="section-body">
@@ -5856,7 +6017,9 @@
                   const cardKey = getCardKey(module, card);
                   const isChecked = !!state.cardSelection[cardKey];
                   const currentConclusion = getCardConclusionState(module, card);
-                  const displayTopBadge = getResultBadgeFromConclusion(currentConclusion);
+                  const displayTopBadge = isAuthorizedAgentIdCard
+                    ? { text: "待核查", type: "warn" }
+                    : getResultBadgeFromConclusion(currentConclusion);
                   const selectedClass = cardKey === state.selectedCardKey ? " selected" : "";
                   return `
                     <article class="builder-table-row${selectedClass}" data-card-key="${cardKey}">
@@ -6181,6 +6344,15 @@
                           )
                         ].filter(Boolean)
                     : card.meta;
+                  const isImageAttachmentCard = module.id === "attachment" && ["营业执照", "安许证", "法人身份证复印件", "授权委托书"].includes(card.subtype);
+                  const attachmentImage = card.subtype === "营业执照"
+                    ? "营业执照.png"
+                    : card.subtype === "安许证"
+                      ? "安全生产许可证.png"
+                      : card.subtype === "法人身份证复印件"
+                        ? "法人身份证.png"
+                        : "授权委托书.png";
+                  const isAuthorizedAgentIdCard = module.id === "attachment" && card.subtype === "授权委托人身份证";
                   const metaBadges = isBuilderCard
                     ? []
                     : isTechLeaderCard || isTitlePersonCard || isTechWorkerCard
@@ -6190,7 +6362,7 @@
                       : isAchievementCard
                         ? []
                         : module.id === "attachment"
-                          ? (card.badges || []).slice(1)
+                          ? (isImageAttachmentCard || isAuthorizedAgentIdCard ? [] : (card.badges || []).slice(1))
                           : (card.badges || []);
                   const displayIndex = isBuilderCard
                     ? currentIndex
@@ -6210,9 +6382,26 @@
                   const selectableClass = " selectable";
                   const isChecked = !!state.cardSelection[cardKey];
                   const attachmentActions = getCardAttachmentActions(module, card);
-                  const attachmentCardClass = module.id === "attachment" && ["营业执照", "安许证", "法人身份证复印件", "授权委托书", "授权委托人身份证"].includes(card.subtype) ? " attachment-card" : "";
+                  const attachmentCardClass = module.id === "attachment" && ["营业执照", "安许证", "法人身份证复印件", "授权委托书", "授权委托人身份证"].includes(card.subtype)
+                    ? ` attachment-card${isImageAttachmentCard ? " image-attachment-card" : ""}${isAuthorizedAgentIdCard ? " no-attachment-card" : ""}${card.subtype === "授权委托书" ? " authorization-card image-attachment-card" : ""}${card.subtype === "安许证" ? " safety-permit-card" : card.subtype === "法人身份证复印件" ? " legal-id-card" : ""}`
+                    : "";
+                  const attachmentThumbMarkup = attachmentActions.length && !isImageAttachmentCard && !isAuthorizedAgentIdCard ? `
+                    <div class="entity-actions">
+                      <div class="entity-attachment-card">
+                        <button class="entity-attachment-thumb ${attachmentActions[0].thumbClass || ""}" type="button" data-action-type="preview">${attachmentActions[0].thumbText}</button>
+                        <div class="entity-attachment-body">
+                          <div class="entity-attachment-title">${attachmentActions[0].label}</div>
+                          <div class="entity-attachment-tools">
+                            ${attachmentActions.map((action) => `<button class="entity-action-btn" type="button" data-action-type="${action.type}">${action.text}</button>`).join("")}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  ` : "";
                   const currentConclusion = getCardConclusionState(module, card);
-                  const displayTopBadge = getResultBadgeFromConclusion(currentConclusion);
+                  const displayTopBadge = isAuthorizedAgentIdCard
+                    ? { text: "待核查", type: "warn" }
+                    : getResultBadgeFromConclusion(currentConclusion);
                   return `
                   <article class="entity-card${selectableClass}${selectedClass}${attachmentCardClass} ${isWideCatalogCard ? "full-span" : ""}" ${cardKey ? `data-card-key="${cardKey}"` : ""}>
                     <div class="entity-main">
@@ -6220,26 +6409,41 @@
                         <h4>${enableCatalogConclusion ? `<input class="catalog-check" type="checkbox" data-card-check="${cardKey}" ${isChecked ? "checked" : ""}>` : ""}${displayIndex ? `<span class="entity-index">${displayIndex}</span>` : ""}${displayTitle}</h4>
                         <div class="entity-head-actions">
                           ${builderSocialBadgeText ? `<span class="badge primary">${builderSocialBadgeText}</span>` : ""}
-                          ${attachmentActions.length ? `
-                            <div class="entity-actions">
-                              <div class="entity-attachment-card">
-                                <button class="entity-attachment-thumb ${attachmentActions[0].thumbClass || ""}" type="button" data-action-type="preview">${attachmentActions[0].thumbText}</button>
-                                <div class="entity-attachment-body">
-                                  <div class="entity-attachment-title">${attachmentActions[0].label}</div>
-                                  <div class="entity-attachment-tools">
-                                    ${attachmentActions.map((action) => `<button class="entity-action-btn" type="button" data-action-type="${action.type}">${action.text}</button>`).join("")}
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
-                          ` : ""}
+                          ${attachmentThumbMarkup}
                         </div>
                         ${displayTopBadge ? `<span class="badge ${displayTopBadge.type} entity-result-badge">${displayTopBadge.text}</span>` : ""}
                       </div>
-                      <div class="entity-meta">
-                        ${metaBadges.map((badge) => `<span class="badge ${badge.type}">${badge.text}</span>`).join("")}
-                      </div>
-                      <p>${displayMeta.join("<br>")}</p>
+                      ${card.subtype === "法人身份证复印件" && isImageAttachmentCard ? `
+                        <div class="legal-id-thumbnails">
+                          <button class="business-license-thumbnail" type="button" data-action-type="preview" aria-label="预览法人身份证正面">
+                            <img src="./法人身份证.png" alt="法人身份证正面缩略图">
+                          </button>
+                          <button class="business-license-thumbnail" type="button" data-action-type="preview-back" aria-label="预览法人身份证反面">
+                            <img src="./法人身份证反面.png" alt="法人身份证反面缩略图">
+                          </button>
+                        </div>
+                      ` : card.subtype === "授权委托书" ? `
+                        <div class="authorization-thumbnails">
+                          <button class="business-license-thumbnail" type="button" data-action-type="preview" aria-label="预览授权委托书图片">
+                            <img src="./授权委托书.png" alt="授权委托书图片缩略图">
+                          </button>
+                          <button class="authorization-pdf-thumbnail" type="button" data-action-type="preview-pdf" aria-label="预览出门条 PDF">
+                            <img src="./授权委托书PDF首页.png" alt="出门条 PDF 首页缩略图">
+                          </button>
+                        </div>
+                      ` : isImageAttachmentCard ? `
+                        <button class="business-license-thumbnail" type="button" data-action-type="preview" aria-label="预览${card.name}">
+                          <img src="./${attachmentImage}" alt="${card.name}缩略图">
+                        </button>
+                      ` : isAuthorizedAgentIdCard ? `
+                        <div class="entity-meta"><span class="badge primary">无附件</span></div>
+                        <p>${displayMeta.join("<br>")}</p>
+                      ` : `
+                        <div class="entity-meta">
+                          ${metaBadges.map((badge) => `<span class="badge ${badge.type}">${badge.text}</span>`).join("")}
+                        </div>
+                        <p>${displayMeta.join("<br>")}</p>
+                      `}
                     </div>
                   </article>
                 `}).join("")}
